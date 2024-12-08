@@ -1,8 +1,10 @@
 //Codifica delle passworcon Spring Security
-package com.astroverse.backend.model;
+package com.astroverse.backend.component;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Hash {
     private static final BCryptPasswordEncoder passEncoder = new BCryptPasswordEncoder();
 

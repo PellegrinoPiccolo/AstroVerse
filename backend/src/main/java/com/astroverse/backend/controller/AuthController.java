@@ -24,7 +24,7 @@ public class AuthController {
     @GetMapping("/validate-token")
     public ResponseEntity<?> validateToken(@RequestBody String token) {
         boolean isValid = jwtUtil.isTokenValid(token);
-        if(isValid) {
+        if (isValid) {
             return ResponseEntity.ok("Token valido");   //200 token valido
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token non valido"); //401 non autorizzato all'accesso al token
