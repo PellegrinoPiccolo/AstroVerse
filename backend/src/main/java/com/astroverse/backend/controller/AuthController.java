@@ -51,4 +51,28 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Utente già esistente");
         }
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
+        try {
+            User user = userService.getUser(email);
+            String userPassword = user.getPassword();
+            if(!Hash.checkPassword(password, userPassword)) {
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password errata");
+            }
+            String accessToken = jwtUtil.generateToken(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getUsername(),
+                    user.getNome(),
+                    user.getCognome(),
+                    user.isAdmin()
+            );
+            Map<String, String> response = new HashMap<>();
+            response.put("accessToken", accessToken);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Utente non esiste");
+        }
+    }
 }

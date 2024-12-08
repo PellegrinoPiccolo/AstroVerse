@@ -21,4 +21,12 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+
+    public User getUser(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("Utente non esiste");
+        }
+        return user;
+    }
 }
