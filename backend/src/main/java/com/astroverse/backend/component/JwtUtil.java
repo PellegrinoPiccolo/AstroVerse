@@ -14,10 +14,11 @@ public class JwtUtil {
     @Value("${jwt_secret}")
     private String secret;
 
-    public String generateToken(String email, String username, String nome, String cognome, boolean isAdmin) throws IllegalArgumentException, JWTCreationException {
+    public String generateToken(long id, String email, String username, String nome, String cognome, boolean isAdmin) throws IllegalArgumentException, JWTCreationException {
         long expirationTime = 90L * 24 * 60 * 60 * 1000; // 3 mesi
         return JWT.create()
                 .withSubject("User Data")
+                .withClaim("id", id)
                 .withClaim("email", email)
                 .withClaim("username", username)
                 .withClaim("nome", nome)

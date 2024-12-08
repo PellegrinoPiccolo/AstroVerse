@@ -14,6 +14,12 @@ public class UserService {
     }
 
     public User saveUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email già in uso");
+        }
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("Username già in uso");
+        }
         return userRepository.save(user);
     }
 }
