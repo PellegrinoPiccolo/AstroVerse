@@ -2,7 +2,6 @@ package com.astroverse.backend.service;
 
 import com.astroverse.backend.model.Space;
 import com.astroverse.backend.repository.SpaceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,5 +12,7 @@ public class SpaceService {
         this.spaceRepository = spaceRepository;
     }
 
-    public Space saveSpace(Space space) {return spaceRepository.save(space);}
+    public Space saveSpace(Space space) {
+        return spaceRepository.save(space);
+    }
 }

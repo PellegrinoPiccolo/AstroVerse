@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,13 +20,15 @@ public class User {
     private boolean isAdmin;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserSpace> userSpaces = new HashSet<>();
-    protected String nome;
-    protected String cognome;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserPost> userPosts = new HashSet<>();
+    private String nome;
+    private String cognome;
     @Column(unique = true, nullable = false)
-    protected String username;
+    private String username;
     @Column(unique = true, nullable = false)
-    protected String email;
-    protected String password;
+    private String email;
+    private String password;
 
     public User() {
         isAdmin = false;
