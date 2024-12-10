@@ -1,0 +1,58 @@
+language: java
+
+# Specifica la versione della JDK
+jdk:
+  - openjdk21
+
+# Specifica l'ambiente di build
+dist: focal
+
+# Configura le directory di cache per Maven e npm
+cache:
+  directories:
+    - "$HOME/.m2"
+    - "$HOME/.npm"
+
+# Imposta le variabili d'ambiente necessarie (per JWT e database H2)
+env:
+  global:
+    - JWT_SECRET=VHJ5aGZxk6b43Fg5l3bdz78TzJ6w04UKlGjGh5A0bOY=
+    - SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb
+    - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
+    - SPRING_DATASOURCE_USERNAME=root
+    - SPRING_DATASOURCE_PASSWORD=
+    - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+
+# Impostazioni per le fasi del build
+jobs:
+  include:
+    - stage: Build Vue Frontend
+      language: node_js
+      node_js: "20" # Usa Node.js 20 o successivo
+      before_install:
+        - cd frontend # Entra nella directory del progetto Vue
+      install:
+        - npm install
+      script:
+        - npm run build
+      after_success:
+        - ls -al dist # Lista il contenuto della directory di build per verifica
+        - cd ..
+
+    - stage: Build Spring Backend
+      before_script:
+        - cd backend # Spostati nella directory che contiene pom.xml
+      script:
+        - mvn clean install -DskipTests
+
+    - stage: Run Tests
+      before_script:
+        - cd backend # Spostati nella directory che contiene pom.xml
+      script:
+        - mvn test -e -X -Dspring.profiles.active=test
+
+# Fasi del build
+stages:
+  - name: Build Vue Frontend
+  - name: Build Spring Backend
+  - name: Run Tests
