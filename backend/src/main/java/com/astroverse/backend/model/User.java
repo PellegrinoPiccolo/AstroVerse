@@ -37,6 +37,4 @@ public class User {
     public User(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
-
-    //TODO
 }

@@ -23,6 +23,4 @@ public class Space {
     private String description;
     @OneToMany(mappedBy = "space", cascade = CascadeType.ALL)
     private Set<UserSpace> userSpaces = new HashSet<>();
-
-    //TODO
 }
