@@ -34,7 +34,7 @@ jobs:
       install:
         - npm install
       script:
-        - npm run build
+        - npm run build # Builda il progetto una volta effettuato l'update, questo perché con run dev invece si avvia il testing
       after_success:
         - ls -al dist # Lista il contenuto della directory di build per verifica
         - cd ..
