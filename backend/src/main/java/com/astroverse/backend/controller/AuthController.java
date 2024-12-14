@@ -1,5 +1,6 @@
 package com.astroverse.backend.controller;
 
+import com.astroverse.backend.component.ChangeUserRequest;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.component.Hash;
 import com.astroverse.backend.model.User;
@@ -9,16 +10,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private static final String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+    private static final String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$";
 
     public AuthController(JwtUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+    }
+
+    public boolean isValidEmail(String email) {
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
+    }
+
+    public boolean isValidPassword(String password) {
+        Pattern pattern = Pattern.compile(passwordRegex);
+        return pattern.matcher(password).matches();
     }
 
     @GetMapping("/validate-token")
@@ -33,6 +47,12 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> registrationUser(@RequestBody User user) {
+        if(!isValidEmail(user.getEmail())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email non valido");
+        }
+        if(!isValidPassword(user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password non valido");
+        }
         String hashPassword = Hash.hashPassword(user.getPassword());
         user.setPassword(hashPassword);
         try {
@@ -73,6 +93,40 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Utente non esiste");
+        }
+    }
+
+    @PostMapping("/change-user-data")
+    public ResponseEntity<?> changeUserData(@RequestHeader("Authorization") String token, @RequestBody ChangeUserRequest request) {
+        try {
+            User user = request.getUser();
+            String confermaPassword = request.getConfermaPassword();
+            token = token.replace("Bearer ", "");
+            if (!jwtUtil.isTokenValid(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token non valido");
+            }
+            if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getNome().isEmpty() || user.getCognome().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno o più dati dell'utente mancanti");
+            } else if(!isValidEmail(user.getEmail())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email non valida");
+            } else {
+                user = userService.changeUserData(user.getId(), user.getEmail(), user.getUsername(), user.getNome(), user.getCognome());
+            }
+            System.out.println("CIAOO " + user.getPassword() + confermaPassword + user.getEmail() + user.getUsername() + user.getNome() + user.getCognome());
+            if(user.getPassword() != null && !user.getPassword().isEmpty()) {
+                if(!isValidPassword(user.getPassword())) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password non valida");
+                } else if(!user.getPassword().equals(confermaPassword)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La password di conferma non è uguale alla nuova password");
+                } else {
+                    String hashPassword = Hash.hashPassword(user.getPassword());
+                    user.setPassword(hashPassword);
+                    userService.changePassword(user.getUsername(), hashPassword);
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK).body("Dati aggiornati");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

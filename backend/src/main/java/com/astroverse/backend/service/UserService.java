@@ -29,4 +29,30 @@ public class UserService {
         }
         return user;
     }
+
+    public User changeUserData(long id, String email, String username, String name, String lastName) {
+        if(userRepository.existsByEmailAndIdNot(email, id)) {
+            throw new IllegalArgumentException("Email già in uso");
+        } else if(userRepository.existsByUsernameAndIdNot(username, id)) {
+            throw new IllegalArgumentException("Username già in uso");
+        }
+        User user = new User();
+        if (userRepository.updateUserById(id, name, lastName, email, username) == 0) {
+            throw new RuntimeException("Errore nella modifica dell'utente ");
+        }
+        user.setEmail(email);
+        user.setUsername(username);
+        user.setNome(name);
+        user.setCognome(lastName);
+        return user;
+    }
+
+    public void changePassword(String username, String password) {
+        if (!userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Utente non esistente");
+        }
+        if (!userRepository.updatePasswordByUsername(username, password)) {
+            throw new RuntimeException("Errore nella modifica della password");
+        }
+    }
 }
