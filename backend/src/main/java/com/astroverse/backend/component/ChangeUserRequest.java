@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class ChangeUserRequest {
     private User user;
     private String confermaPassword;

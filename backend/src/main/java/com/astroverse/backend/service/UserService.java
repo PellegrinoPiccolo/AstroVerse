@@ -51,7 +51,7 @@ public class UserService {
         if (!userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Utente non esistente");
         }
-        if (!userRepository.updatePasswordByUsername(username, password)) {
+        if (userRepository.updatePasswordByUsername(username, password) == 0) {
             throw new RuntimeException("Errore nella modifica della password");
         }
     }

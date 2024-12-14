@@ -48,10 +48,10 @@ public class AuthController {
     @PostMapping("/registration")
     public ResponseEntity<?> registrationUser(@RequestBody User user) {
         if(!isValidEmail(user.getEmail())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email non valido");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email non valida");
         }
         if(!isValidPassword(user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password non valido");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password non valida");
         }
         String hashPassword = Hash.hashPassword(user.getPassword());
         user.setPassword(hashPassword);
@@ -101,6 +101,7 @@ public class AuthController {
         try {
             User user = request.getUser();
             String confermaPassword = request.getConfermaPassword();
+            String password = user.getPassword();
             token = token.replace("Bearer ", "");
             if (!jwtUtil.isTokenValid(token)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token non valido");
@@ -112,14 +113,14 @@ public class AuthController {
             } else {
                 user = userService.changeUserData(user.getId(), user.getEmail(), user.getUsername(), user.getNome(), user.getCognome());
             }
-            System.out.println("CIAOO " + user.getPassword() + confermaPassword + user.getEmail() + user.getUsername() + user.getNome() + user.getCognome());
-            if(user.getPassword() != null && !user.getPassword().isEmpty()) {
-                if(!isValidPassword(user.getPassword())) {
+            System.out.println("pas" + password);
+            if(!password.isEmpty()) {
+                if(!isValidPassword(password)) {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password non valida");
-                } else if(!user.getPassword().equals(confermaPassword)) {
+                } else if(!password.equals(confermaPassword)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La password di conferma non è uguale alla nuova password");
                 } else {
-                    String hashPassword = Hash.hashPassword(user.getPassword());
+                    String hashPassword = Hash.hashPassword(password);
                     user.setPassword(hashPassword);
                     userService.changePassword(user.getUsername(), hashPassword);
                 }

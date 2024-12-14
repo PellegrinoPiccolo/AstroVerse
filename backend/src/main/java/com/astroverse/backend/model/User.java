@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "user")
+@ToString
 public class User {
 
     @Id
