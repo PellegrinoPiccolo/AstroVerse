@@ -55,4 +55,11 @@ public class UserService {
             throw new RuntimeException("Errore nella modifica della password");
         }
     }
+
+    public User getUserData(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("Utente non esistente");
+        }
+        return userRepository.getUserById(id);
+    }
 }

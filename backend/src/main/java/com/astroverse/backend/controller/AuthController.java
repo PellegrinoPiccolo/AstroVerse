@@ -3,10 +3,12 @@ package com.astroverse.backend.controller;
 import com.astroverse.backend.component.ChangeUserRequest;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.component.Hash;
+import com.astroverse.backend.component.UserDTO;
 import com.astroverse.backend.model.TokenBlackList;
 import com.astroverse.backend.model.User;
 import com.astroverse.backend.service.TokenBlackListService;
 import com.astroverse.backend.service.UserService;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -96,7 +98,7 @@ public class AuthController {
             response.put("accessToken", accessToken);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Utente non esiste");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utente non esiste");
         }
     }
 
@@ -145,6 +147,26 @@ public class AuthController {
             tokenBlackList.setAccessToken(token);
             tokenBlackListService.saveAccessToken(tokenBlackList);
             return ResponseEntity.status(HttpStatus.OK).body("Logout effettuato con successo");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utente non esiste");
+        }
+    }
+
+    @GetMapping("/view-account")
+    public ResponseEntity<?> viewAccount(@RequestHeader("Authorization") String token) {
+        try {
+            token = token.replace("Bearer ", "");
+            if(!jwtUtil.isTokenValid(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token non valido");
+            }
+            DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
+            Long idString = decodedJWT.getClaim("id").asLong();
+            if (idString == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Id utente non presente");
+            }
+            User user = userService.getUserData(idString);
+            UserDTO userDTO = new UserDTO(user.getUserSpaces(), user.getUserPosts(), user.getNome(), user.getCognome(), user.getUsername(), user.getEmail());
+            return ResponseEntity.status(HttpStatus.OK).body(userDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utente non esiste");
         }
