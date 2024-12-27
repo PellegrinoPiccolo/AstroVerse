@@ -16,7 +16,7 @@ public class JwtUtil {
     private String secret;
 
     public String generateToken(long id, String email, String username, String nome, String cognome, boolean isAdmin) throws IllegalArgumentException, JWTCreationException {
-        long expirationTime = 90L * 24 * 60 * 60 * 1000; // 3 mesi
+        long expirationTime = 30L * 24 * 60 * 60 * 1000; // 1 mese
         return JWT.create()
                 .withSubject("User Data")
                 .withClaim("id", id)

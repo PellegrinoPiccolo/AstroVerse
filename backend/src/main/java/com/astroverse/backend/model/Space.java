@@ -1,5 +1,6 @@
 package com.astroverse.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Space {
     private String image;
     private String description;
     @OneToMany(mappedBy = "space", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<UserSpace> userSpaces = new HashSet<>();
 
     public Space(String title, String argument, String description) {
