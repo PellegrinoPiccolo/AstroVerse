@@ -78,4 +78,9 @@ public class SpaceController {
         }
         return ResponseEntity.status(500).body("Errore nella creazione dell spazio");
     }
+
+    @GetMapping("/view/{id}/")
+    public Space viewSpace(@PathVariable long id) {
+        return spaceService.getSpace(id);
+    }
 }
