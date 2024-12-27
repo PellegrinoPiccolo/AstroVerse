@@ -9,9 +9,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class RequestInterceptor implements HandlerInterceptor {
     private final TokenBlackListService tokenBlackListService;
+    private final JwtUtil jwtUtil;
 
-    public RequestInterceptor(TokenBlackListService tokenBlackListService) {
+    public RequestInterceptor(TokenBlackListService tokenBlackListService, JwtUtil jwtUtil) {
         this.tokenBlackListService = tokenBlackListService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -26,6 +28,14 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     private boolean isValidRequest(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization");
-        return !tokenBlackListService.existToken(accessToken);
+        accessToken = accessToken.replace("Bearer ", "");
+        if (tokenBlackListService.existToken(accessToken)) {
+            return false;
+        }
+        if (!jwtUtil.isTokenValid(accessToken)) {
+            System.out.println("accessToken: " + accessToken);
+            return false;
+        }
+        return true;
     }
 }

@@ -23,4 +23,12 @@ public class Space {
     private String description;
     @OneToMany(mappedBy = "space", cascade = CascadeType.ALL)
     private Set<UserSpace> userSpaces = new HashSet<>();
+
+    public Space(String title, String argument, String description) {
+        this.title = title;
+        this.argument = argument;
+        this.image = "";
+        this.description = description;
+        this.userSpaces = new HashSet<>();
+    }
 }

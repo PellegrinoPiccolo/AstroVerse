@@ -44,7 +44,6 @@ public class JwtUtil {
     }
 
     public static DecodedJWT JwtDecode(String token) {
-        DecodedJWT decodedJWT = JWT.decode(token);
-        return decodedJWT;
+        return JWT.decode(token);
     }
 }

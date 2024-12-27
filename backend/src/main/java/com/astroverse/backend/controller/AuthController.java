@@ -22,6 +22,8 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
     private final TokenBlackListService tokenBlackListService;
+    private static final String namesRegex = "^[A-Za-zÀ-ÿ\\s]{2,30}$";
+    private static final String usernameRegex = "^[A-Za-z0-9._\\-\\s]{3,20}$";
     private static final String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
     private static final String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$";
 
@@ -30,15 +32,9 @@ public class AuthController {
         this.userService = userService;
         this.tokenBlackListService = tokenBlackListService;
     }
-
-    public boolean isValidEmail(String email) {
-        Pattern pattern = Pattern.compile(emailRegex);
-        return pattern.matcher(email).matches();
-    }
-
-    public boolean isValidPassword(String password) {
-        Pattern pattern = Pattern.compile(passwordRegex);
-        return pattern.matcher(password).matches();
+    public boolean isValidText(String text, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(text).matches();
     }
 
     @GetMapping("/validate-token")
@@ -53,11 +49,20 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> registrationUser(@RequestBody User user) {
-        if(!isValidEmail(user.getEmail())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email non valida");
+        if (!isValidText(user.getNome(), namesRegex)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome non valido");
         }
-        if(!isValidPassword(user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password non valida");
+        if (!isValidText(user.getCognome(), namesRegex)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cognome non valido");
+        }
+        if (!isValidText(user.getUsername(), usernameRegex)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username non valido");
+        }
+        if(!isValidText(user.getEmail(), emailRegex)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email non valida");
+        }
+        if(!isValidText(user.getPassword(), passwordRegex)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password non valida");
         }
         String hashPassword = Hash.hashPassword(user.getPassword());
         user.setPassword(hashPassword);
@@ -114,14 +119,20 @@ public class AuthController {
             }
             if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getNome().isEmpty() || user.getCognome().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno o più dati dell'utente mancanti");
-            } else if(!isValidEmail(user.getEmail())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email non valida");
+            } else if(!isValidText(user.getEmail(), emailRegex)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email non valida");
+            } else if (!isValidText(user.getNome(), namesRegex)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome non valido");
+            } else if(!isValidText(user.getCognome(), namesRegex)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cognome non valido");
+            } else if (!isValidText(user.getUsername(), usernameRegex)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username non valido");
             } else {
                 user = userService.changeUserData(user.getId(), user.getEmail(), user.getUsername(), user.getNome(), user.getCognome());
             }
             if(!password.isEmpty()) {
-                if(!isValidPassword(password)) {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password non valida");
+                if(!isValidText(password, passwordRegex)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password non valida");
                 } else if(!password.equals(confermaPassword)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La password di conferma non è uguale alla nuova password");
                 } else {

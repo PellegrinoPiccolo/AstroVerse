@@ -15,4 +15,8 @@ public class SpaceService {
     public Space saveSpace(Space space) {
         return spaceRepository.save(space);
     }
+
+    public int saveImage(long id, String image) {
+        return spaceRepository.updateImageById(id, image);
+    }
 }
