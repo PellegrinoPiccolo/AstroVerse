@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -182,6 +183,11 @@ public class SpaceController {
             return ResponseEntity.status(500).body("Errore nel salvataggio dello spazio");
         }
         return ResponseEntity.ok("Spazio modificato correttamente");
+    }
+
+    @GetMapping("/search/{param}")
+    public ResponseEntity<?> searchSpace(@PathVariable String param) {
+        return ResponseEntity.ok(spaceService.searchSpace(param));
     }
 
     protected boolean checkImageFile(MultipartFile file) {

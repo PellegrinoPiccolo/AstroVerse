@@ -4,6 +4,7 @@ import com.astroverse.backend.model.Space;
 import com.astroverse.backend.repository.SpaceRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,5 +30,9 @@ public class SpaceService {
     }
     public int updateSpace(long id, String titolo, String descrizione, String argomento) {
         return spaceRepository.updateSpaceDetailsById(id, titolo, descrizione, argomento);
+    }
+
+    public List<Space> searchSpace(String search) {
+        return spaceRepository.findByTitleContainingIgnoreCaseOrArgumentContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, search);
     }
 }
