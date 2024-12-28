@@ -43,7 +43,7 @@ public class SpaceController {
     }
 
     @PostMapping("/create/")
-    public ResponseEntity<?> createSpace(@RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<?> createSpace(@RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
         if (!isValidText(titolo, titoloRegex) && titolo.isEmpty()) {
             return ResponseEntity.status(400).body("Errore nel formato del titolo");
         } else if (!isValidText(argomento, argomentoRegex) && argomento.isEmpty()) {
@@ -55,8 +55,7 @@ public class SpaceController {
         Space createdSpace = spaceService.saveSpace(space);
         if (createdSpace != null) {
             if (file != null && !file.isEmpty()) {
-                String contentType = file.getContentType();
-                if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+                if(!checkImageFile(file)) {
                     return ResponseEntity.status(400).body("Formato immagine non corretto");
                 }
                 Path path = Paths.get(directory);
@@ -75,25 +74,23 @@ public class SpaceController {
                         throw new RuntimeException(e);
                     }
                 }
-                String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
-                Path filePath = spacePath.resolve(fileName);
-                try {
-                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                createdSpace.setImage(spacePath + fileName);
-                if (spaceService.saveImage(createdSpace.getId(), createdSpace.getImage()) == 0) {
+                if (!saveImageFile(createdSpace, spacePath, file)) {
                     return ResponseEntity.status(500).body("Errore nel caricamento dell'immagine");
                 }
             }
+            token = token.replace("Bearer ", "");
+            DecodedJWT decoded = JwtUtil.JwtDecode(token);
+            String email = decoded.getClaim("email").asString();
+            User user = userService.getUser(email);
+            UserSpace userSpace = new UserSpace(user, createdSpace);
+            userSpaceService.saveUserSpaceAdmin(userSpace);
             return ResponseEntity.ok("Spazio Creato");
         }
         return ResponseEntity.status(500).body("Errore nella creazione dell spazio");
     }
 
     @GetMapping("/view/{id}/")
-    public ResponseEntity<?> viewSpace(@PathVariable long id) {
+    public ResponseEntity<?> viewSpace(@PathVariable Long id) {
         Optional<Space> optional = spaceService.getSpace(id);
         if (optional.isPresent()) {
             return ResponseEntity.ok(optional.get());
@@ -123,5 +120,99 @@ public class SpaceController {
         } else  {
             return ResponseEntity.status(400).body("Iscrizione allo spazio già effettuata");
         }
+    }
+
+    @PostMapping("/modify/{id}/")
+    public ResponseEntity<?> modifySpace(@PathVariable Long id, @RequestHeader("Authorization") String token, @RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file) {
+        Optional<Space> optionalSpace = spaceService.getSpace(id);
+        if (optionalSpace.isEmpty()) {
+            return ResponseEntity.status(400).body("Questo spazio non esiste");
+        }
+        Space space = optionalSpace.get();
+        token = token.replace("Bearer ", "");
+        DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
+        String email = decodedJWT.getClaim("email").asString();
+        User user = userService.getUser(email);
+        UserSpace userSpace = new UserSpace(user, space);
+        if (!userSpaceService.existSubscribe(userSpace)) {
+            return ResponseEntity.status(400).body("L'utente non è iscritto allo spazio");
+        }
+        if(!userSpaceService.isUserAdmin(userSpace)) {
+            return ResponseEntity.status(400).body("L'utente non è admin");
+        }
+        if (!isValidText(titolo, titoloRegex) && titolo.isEmpty()) {
+            return ResponseEntity.status(400).body("Errore nel formato del titolo");
+        } else if (!isValidText(argomento, argomentoRegex) && argomento.isEmpty()) {
+            return ResponseEntity.status(400).body("Errore nel formato dell'argomento");
+        } else if (!isValidText(descrizione, descrizioneRegex) && descrizione.isEmpty()) {
+            return ResponseEntity.status(400).body("Errore nel formato della descrizione");
+        }
+        if (file != null && !file.isEmpty()) {
+            if(!checkImageFile(file)) {
+                return ResponseEntity.status(400).body("Formato immagine non corretto");
+            }
+            Path path = Paths.get(directory);
+            Path spacePath = Paths.get(directory + "/" + space.getId() + "/");
+            if(!Files.exists(path)) {
+                try {
+                    Files.createDirectories(path);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Path oldFilePath = Paths.get(space.getImage());
+            System.out.println("oldFilePath: " + oldFilePath);
+            try {
+                if(Files.exists(oldFilePath)) {
+                    System.out.println("Entra nell'if se esiste");
+                    Files.delete(oldFilePath);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (!updateImageFile(space, spacePath, file)) {
+                return ResponseEntity.status(500).body("Errore nel caricamento dell'immagine");
+            }
+            return ResponseEntity.ok("Modifica allo spazio avvenuta con successo");
+        }
+        space.setTitle(titolo);
+        space.setArgument(argomento);
+        space.setDescription(descrizione);
+        if (spaceService.updateSpace(space.getId(), space.getTitle(), space.getDescription(), space.getArgument()) == 0) {
+            return ResponseEntity.status(500).body("Errore nel salvataggio dello spazio");
+        }
+        return ResponseEntity.ok("Spazio modificato correttamente");
+    }
+
+    protected boolean checkImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType.equals("image/jpeg") || contentType.equals("image/png");
+    }
+
+    protected boolean saveImageFile(Space space, Path spacePath, MultipartFile file) {
+        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+        Path filePath = spacePath.resolve(fileName);
+        try {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        space.setImage(filePath.toString());
+        return spaceService.saveImage(space.getId(), space.getImage()) != 0;
+    }
+
+    protected boolean updateImageFile(Space space, Path spacePath, MultipartFile file) {
+        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+        Path filePath = spacePath.resolve(fileName);
+        try {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        space.setImage(filePath.toString());
+        if (spaceService.updateImage(space.getId(), space.getImage()) == 0) {
+            return false;
+        }
+        return true;
     }
 }

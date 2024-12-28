@@ -24,4 +24,10 @@ public class SpaceService {
     public Optional<Space> getSpace(long id) {
         return spaceRepository.getSpaceById(id);
     }
+    public int updateImage(long id, String image) {
+        return spaceRepository.updateImageById(id, image);
+    }
+    public int updateSpace(long id, String titolo, String descrizione, String argomento) {
+        return spaceRepository.updateSpaceDetailsById(id, titolo, descrizione, argomento);
+    }
 }

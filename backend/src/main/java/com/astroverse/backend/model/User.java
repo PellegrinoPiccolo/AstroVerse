@@ -41,4 +41,12 @@ public class User {
     public User(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
+
+    public User(String nome, String cognome, String username, String email, String password) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 }

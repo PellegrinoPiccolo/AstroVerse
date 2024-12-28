@@ -48,7 +48,8 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registrationUser(@RequestBody User user) {
+    public ResponseEntity<?> registrationUser(@RequestParam String nome, @RequestParam String cognome, @RequestParam String email, @RequestParam String username, @RequestParam String password) {
+        User user = new User(nome, cognome, username, email, password);
         if (!isValidText(user.getNome(), namesRegex)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome non valido");
         }
@@ -75,6 +76,9 @@ public class AuthController {
                     user.getNome(),
                     user.getCognome(),
                     user.isAdmin());
+            if (accessToken == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nella generazione del token");
+            }
             Map<String, String> response = new HashMap<>();
             response.put("accessToken", accessToken);
             return ResponseEntity.ok(response);

@@ -23,4 +23,15 @@ public class UserSpaceService {
         Space space = userSpace.getSpace();
         return userSpaceRepository.existsByUser_IdAndSpace_Id(user.getId(), space.getId());
     }
+
+    public boolean isUserAdmin(UserSpace userSpace) {
+        User user = userSpace.getUser();
+        Space space = userSpace.getSpace();
+        return userSpaceRepository.existsByUser_IdAndSpace_IdAndIsSpaceAdminTrue(user.getId(), space.getId());
+    }
+
+    public UserSpace saveUserSpaceAdmin(UserSpace userSpace) {
+        userSpace.setSpaceAdmin(true);
+        return userSpaceRepository.save(userSpace);
+    }
 }

@@ -19,4 +19,8 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
                        @Param("image") String image);
 
     Optional<Space> getSpaceById(long id);
+    @Transactional
+    @Modifying
+    @Query("UPDATE Space s SET s.title = :title, s.description = :description, s.argument = :argument WHERE s.id = :id")
+    int updateSpaceDetailsById(Long id, String title, String description, String argument);
 }
