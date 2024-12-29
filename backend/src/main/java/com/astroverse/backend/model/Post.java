@@ -19,10 +19,14 @@ public class Post {
     private long id;
     private String testo;
     private String file;
-    private int upVoti;
-    private int downVoti;
-    private int spaceId;
-    private int userId;
+    private long spaceId;
+    private long userId;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<UserPost> userPosts = new HashSet<>();
+
+    public Post(String testo, long spaceId, long userId) {
+        this.testo = testo;
+        this.spaceId = spaceId;
+        this.userId = userId;
+    }
 }

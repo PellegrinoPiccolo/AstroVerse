@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,11 @@ public class Space {
     @OneToMany(mappedBy = "space", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<UserSpace> userSpaces = new HashSet<>();
+    private LocalDateTime createdAt;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 
     public Space(String title, String argument, String description) {
         this.title = title;
