@@ -72,7 +72,9 @@ public class PostController {
                 throw new RuntimeException(e);
             }
             post.setFile(filePath.toString());
-            if(postService.saveImage(post.getId(), post.getFile()) == 0) {
+            int v = postService.saveImage(createdPost.getId(), post.getFile());
+            System.out.println(createdPost.getId() + " ID DEL NUOVO POST" + v);
+            if (v == 0) {
                 return ResponseEntity.status(500).body("Errore nel salvataggio dell'immagine");
             }
         }
@@ -100,6 +102,50 @@ public class PostController {
         Vote newVote = new Vote(post, user, vote);
         voteService.saveVote(newVote);
         return ResponseEntity.ok("Votazione al post effettuata con successo");
+    }
+
+    @PostMapping("/modify/{id}")
+    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
+        if (!isValidText(testo, testoRegex)) {
+            return ResponseEntity.status(400).body("Formato del testo non valido");
+        }
+        DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
+        long idUtente = decodedJWT.getClaim("id").asLong();
+        if(!postService.isCreationUser(idUtente, id)) {
+            return ResponseEntity.status(401).body("Modifica del post non autorizzata");
+        }
+        Post post = postService.getPost(id);
+        post.setTesto(testo);
+        postService.savePost(post);
+        if (file != null && !file.isEmpty()) {
+            if(!checkImageFile(file)) {
+                return ResponseEntity.status(400).body("Formato dell'immagine non valido");
+            }
+            Path path = Paths.get(directory);
+            Path postPath = Paths.get(directory + "/" + post.getId() + "/");
+            try {
+                if (!Files.exists(path)) {
+                    Files.createDirectories(path);
+                }
+                if (!Files.exists(postPath)) {
+                    Files.createDirectories(postPath);
+                }
+
+                Path oldFilePath = Paths.get(post.getFile());
+                if (Files.exists(oldFilePath)) {
+                    Files.delete(oldFilePath);
+                }
+                String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+                Path filePath = postPath.resolve(fileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                post.setFile(filePath.toString());
+                postService.saveImage(post.getId(), post.getFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return ResponseEntity.ok("La modifica al post è avvenuta con successo");
     }
 
     protected boolean checkImageFile(MultipartFile file) {

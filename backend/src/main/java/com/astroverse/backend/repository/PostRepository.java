@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Transactional
-    @Query("UPDATE Space s SET s.image = :image WHERE s.id = :id")
+    @Query("UPDATE Post p SET p.file = :image WHERE p.id = :id")
     int updateImageById(@Param("id") long id, @Param("image") String image);
     Post findById(long id);
+    boolean existsByUserIdAndId(Long userId, Long postId);  //verifica se l'utente ha creato il post
 }

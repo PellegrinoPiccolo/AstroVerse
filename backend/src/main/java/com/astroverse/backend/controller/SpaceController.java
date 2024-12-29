@@ -42,7 +42,7 @@ public class SpaceController {
         return pattern.matcher(text).matches();
     }
 
-    @PostMapping("/create/")
+    @PostMapping("/create")
     public ResponseEntity<?> createSpace(@RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
         if (!isValidText(titolo, titoloRegex) && titolo.isEmpty()) {
             return ResponseEntity.status(400).body("Errore nel formato del titolo");
@@ -88,7 +88,7 @@ public class SpaceController {
         return ResponseEntity.status(500).body("Errore nella creazione dell spazio");
     }
 
-    @GetMapping("/view/{id}/")
+    @GetMapping("/view/{id}")
     public ResponseEntity<?> viewSpace(@PathVariable Long id) {
         Optional<Space> optional = spaceService.getSpace(id);
         if (optional.isPresent()) {
@@ -98,7 +98,7 @@ public class SpaceController {
         }
     }
 
-    @PostMapping("/subscribe/")
+    @PostMapping("/subscribe")
     public ResponseEntity<?> subscribeSpace(@RequestParam Long idSpazio, @RequestHeader("Authorization") String token) {
         if (idSpazio == null) {
             return ResponseEntity.status(500).body("Errore nell'iscrizione allo spazio desiderato");
@@ -121,7 +121,7 @@ public class SpaceController {
         }
     }
 
-    @PostMapping("/modify/{id}/")
+    @PostMapping("/modify/{id}")
     public ResponseEntity<?> modifySpace(@PathVariable Long id, @RequestHeader("Authorization") String token, @RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file) {
         Optional<Space> optionalSpace = spaceService.getSpace(id);
         if (optionalSpace.isEmpty()) {
@@ -160,10 +160,8 @@ public class SpaceController {
                 }
             }
             Path oldFilePath = Paths.get(space.getImage());
-            System.out.println("oldFilePath: " + oldFilePath);
             try {
                 if(Files.exists(oldFilePath)) {
-                    System.out.println("Entra nell'if se esiste");
                     Files.delete(oldFilePath);
                 }
             } catch (IOException e) {

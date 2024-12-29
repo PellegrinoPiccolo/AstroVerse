@@ -23,4 +23,8 @@ public class PostService {
     public Post getPost(long id) {
         return postRepository.findById(id);
     }
+
+    public boolean isCreationUser(long idUtente, long idPost) {
+        return postRepository.existsByUserIdAndId(idUtente, idPost);
+    }
 }
