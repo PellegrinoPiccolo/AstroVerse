@@ -19,4 +19,8 @@ public class PostService {
     public int saveImage(long id, String file) {
         return postRepository.updateImageById(id, file);
     }
+
+    public Post getPost(long id) {
+        return postRepository.findById(id);
+    }
 }

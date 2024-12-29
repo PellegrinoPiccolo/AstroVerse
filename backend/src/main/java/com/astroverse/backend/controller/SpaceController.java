@@ -81,8 +81,7 @@ public class SpaceController {
             token = token.replace("Bearer ", "");
             DecodedJWT decoded = JwtUtil.JwtDecode(token);
             String email = decoded.getClaim("email").asString();
-            User user = userService.getUser(email);
-            UserSpace userSpace = new UserSpace(user, createdSpace);
+            UserSpace userSpace = new UserSpace(userService.getUser(email), createdSpace);
             userSpaceService.saveUserSpaceAdmin(userSpace);
             return ResponseEntity.ok("Spazio Creato");
         }
@@ -215,9 +214,6 @@ public class SpaceController {
             throw new RuntimeException(e);
         }
         space.setImage(filePath.toString());
-        if (spaceService.updateImage(space.getId(), space.getImage()) == 0) {
-            return false;
-        }
-        return true;
+        return spaceService.updateImage(space.getId(), space.getImage()) != 0;
     }
 }

@@ -13,6 +13,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Space s SET s.image = :image WHERE s.id = :id")
-    int updateImageById(@Param("id") long id,
-                        @Param("image") String image);
+    int updateImageById(@Param("id") long id, @Param("image") String image);
+    Post findById(long id);
 }

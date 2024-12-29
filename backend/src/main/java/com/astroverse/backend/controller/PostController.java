@@ -3,8 +3,10 @@ package com.astroverse.backend.controller;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.model.Post;
 import com.astroverse.backend.model.User;
+import com.astroverse.backend.model.Vote;
 import com.astroverse.backend.service.PostService;
 import com.astroverse.backend.service.UserService;
+import com.astroverse.backend.service.VoteService;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -23,11 +26,13 @@ public class PostController {
     private static final String testoRegex = "^[\\w\\s\\p{Punct}]{1,400}$";
     private final UserService userService;
     private final PostService postService;
+    private final VoteService voteService;
     private static final String directory = "uploads-post/";
 
-    public PostController(UserService userService, PostService postService) {
+    public PostController(UserService userService, PostService postService, VoteService voteService) {
         this.userService = userService;
         this.postService = postService;
+        this.voteService = voteService;
     }
 
     @PostMapping("/create/{id}")
@@ -37,9 +42,7 @@ public class PostController {
             return ResponseEntity.status(400).body("Formato del testo non valido");
         }
         DecodedJWT decoded = JwtUtil.JwtDecode(token);
-        String email = decoded.getClaim("email").asString();
-        User user = userService.getUser(email);
-        Post post = new Post(testo, id, user.getId());
+        Post post = new Post(testo, id, decoded.getClaim("id").asLong());
         Post createdPost = postService.savePost(post);
         if (file != null && !file.isEmpty()) {
             if(!checkImageFile(file)) {
@@ -74,6 +77,29 @@ public class PostController {
             }
         }
         return ResponseEntity.ok("Nuovo post creato con successo");
+    }
+
+    @PostMapping("/vote/{id}")
+    public ResponseEntity<?> votePost(@PathVariable long id, @RequestParam boolean vote, @RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
+        DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
+        String email = decodedJWT.getClaim("email").asString();
+        User user = userService.getUser(email);
+        Post post = postService.getPost(id);
+        Optional<Vote> optionalVote = voteService.existVote(user.getId(), post.getSpaceId());
+        if (optionalVote.isPresent()) {
+           Vote oldVote = optionalVote.get();
+           if (oldVote.isVote() != vote) {
+                voteService.updateVote(oldVote.getId(), vote);
+               return ResponseEntity.ok("Voto aggiornato");
+           } else {
+               voteService.deleteVote(oldVote.getId());
+               return ResponseEntity.ok("Voto eliminato");
+           }
+        }
+        Vote newVote = new Vote(post, user, vote);
+        voteService.saveVote(newVote);
+        return ResponseEntity.ok("Votazione al post effettuata con successo");
     }
 
     protected boolean checkImageFile(MultipartFile file) {

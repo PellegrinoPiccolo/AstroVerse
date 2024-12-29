@@ -28,4 +28,10 @@ public class Vote {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    public Vote(Post post, User user, boolean vote) {
+        this.post = post;
+        this.user = user;
+        this.vote = vote;
+    }
 }
