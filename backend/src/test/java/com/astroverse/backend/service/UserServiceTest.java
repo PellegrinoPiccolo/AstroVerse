@@ -4,28 +4,33 @@ import com.astroverse.backend.model.User;
 import com.astroverse.backend.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
-public class UserService {
+public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
-
     @InjectMocks
     private UserService userService;
+    @InjectMocks
+    private User user;
 
     @Test
     public void testSaveUser() {
-        User user = new User();
-        user.setEmail("provatest@gmail.com");
-        user.setPassword("Prova!22");
-        user.setNome("ProvaNome");
-        user.setCognome("ProvaCognome");
-        user.setUsername("UsernameProva");
+        user = new User("prova", "prova", "provaUsername", "provatest@gmail.com", "provaPassword!22");
+        when(userRepository.existsByEmail(user.getEmail())).thenReturn(false);
+        when(userRepository.existsByUsername(user.getUsername())).thenReturn(false);
+        when(userRepository.save(user)).thenReturn(user);
+
         User savedUser = userService.saveUser(user);
+
+        assertNotNull(savedUser);
+        assertEquals("provaUsername", savedUser.getUsername());
+        verify(userRepository, times(1)).save(user);
     }
 }
