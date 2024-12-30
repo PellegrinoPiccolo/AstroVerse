@@ -19,7 +19,7 @@ public class VoteService {
     }
 
     public Optional<Vote> existVote(long userId, long spaceId) {
-        return voteRepository.findByUserIdAndPostId(userId, spaceId);
+        return voteRepository.findByUser_IdAndPost_Id(userId, spaceId);
     }
 
     public void updateVote(long voteId, boolean newVote) {

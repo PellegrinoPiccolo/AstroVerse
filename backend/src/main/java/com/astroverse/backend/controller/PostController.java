@@ -6,6 +6,7 @@ import com.astroverse.backend.model.User;
 import com.astroverse.backend.model.Vote;
 import com.astroverse.backend.service.PostService;
 import com.astroverse.backend.service.UserService;
+import com.astroverse.backend.service.VotePostFacade;
 import com.astroverse.backend.service.VoteService;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +30,13 @@ public class PostController {
     private final VoteService voteService;
     private static final String directory = "uploads-post/";
 
-    public PostController(UserService userService, PostService postService, VoteService voteService) {
+    private final VotePostFacade votePostFacade;
+
+    public PostController(UserService userService, PostService postService, VoteService voteService, VotePostFacade votePostFacade) {
         this.userService = userService;
         this.postService = postService;
         this.voteService = voteService;
+        this.votePostFacade = votePostFacade;
     }
 
     @PostMapping("/create/{id}")
@@ -83,25 +87,8 @@ public class PostController {
 
     @PostMapping("/vote/{id}")
     public ResponseEntity<?> votePost(@PathVariable long id, @RequestParam boolean vote, @RequestHeader("Authorization") String token) {
-        token = token.replace("Bearer ", "");
-        DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
-        String email = decodedJWT.getClaim("email").asString();
-        User user = userService.getUser(email);
-        Post post = postService.getPost(id);
-        Optional<Vote> optionalVote = voteService.existVote(user.getId(), post.getSpaceId());
-        if (optionalVote.isPresent()) {
-           Vote oldVote = optionalVote.get();
-           if (oldVote.isVote() != vote) {
-                voteService.updateVote(oldVote.getId(), vote);
-               return ResponseEntity.ok("Voto aggiornato");
-           } else {
-               voteService.deleteVote(oldVote.getId());
-               return ResponseEntity.ok("Voto eliminato");
-           }
-        }
-        Vote newVote = new Vote(post, user, vote);
-        voteService.saveVote(newVote);
-        return ResponseEntity.ok("Votazione al post effettuata con successo");
+        String response = votePostFacade.votePost(id, vote, token);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/modify/{id}")
