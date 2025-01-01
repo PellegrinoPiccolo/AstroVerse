@@ -7,11 +7,9 @@ GitHub Repository: [AstroVerse Repository](https://github.com/PellegrinoPiccolo/
 Ultimo aggiornamento: January 1, 2025 7:11 PM
 
 ![Spring Boot Social Web Application
-
 A project for Software Engineering course of Computer Science at University of Salerno](AstroVerse_logo.png)
 
-Spring Boot Social Web Application
-
+Spring Boot Social Web Application  
 A project for Software Engineering course of Computer Science at University of Salerno
 
 # Project Description
