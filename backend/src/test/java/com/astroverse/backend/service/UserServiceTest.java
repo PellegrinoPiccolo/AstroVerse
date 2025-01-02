@@ -36,15 +36,12 @@ public class UserServiceTest {
     @Test
     public void testChangeUserData() {
         user = new User("prova", "prova", "provaUsername", "provatest@gmail.com", "provaPassword!22");
+        when(userRepository.save(user)).thenReturn(user);
+        user = userService.saveUser(user);
+        when(userRepository.existsByEmailAndIdNot("orny05@gmail.com", user.getId())).thenReturn(false);
+        when(userRepository.existsByUsernameAndIdNot("Orni05", user.getId())).thenReturn(false);
         when(userRepository.updateUserById(user.getId(), "Ornella", "Zarrella", "orny05@gmail.com", "Orni05")).thenReturn(1);
-        int updatedRows = userRepository.updateUserById(
-                user.getId(),
-                "Ornella",
-                "Zarrella",
-                "orny05@gmail.com",
-                "Orni05"
-        );
-        assertEquals(1, updatedRows);
+        user = userService.changeUserData(user.getId(), "orny05@gmail.com", "Orni05", "Ornella", "Zarrella");
         verify(userRepository, times(1)).updateUserById(
                 user.getId(),
                 "Ornella",
@@ -52,9 +49,17 @@ public class UserServiceTest {
                 "orny05@gmail.com",
                 "Orni05"
         );
+        assertNotNull(user);
+        assertEquals("Orni05", user.getUsername());
+        when(userRepository.existsByUsername(user.getUsername())).thenReturn(true);
         when(userRepository.updatePasswordByUsername(user.getUsername(), "Provaaaaa!22")).thenReturn(1);
-        updatedRows = userRepository.updatePasswordByUsername(user.getUsername(), "Provaaaaa!22");
-        assertEquals(1, updatedRows);
+        userService.changePassword(user.getUsername(), "Provaaaaa!22");
+        user.setPassword("Provaaaaa!22");
+        when(userRepository.existsById(user.getId())).thenReturn(true);
+        when(userRepository.getUserById(user.getId())).thenReturn(user);
+        user = userService.getUserData(user.getId());
+        verify(userRepository, times(1)).getUserById(user.getId());
+        assertEquals("Provaaaaa!22", user.getPassword());
         verify(userRepository, times(1)).updatePasswordByUsername(user.getUsername(), "Provaaaaa!22");
     }
 }
