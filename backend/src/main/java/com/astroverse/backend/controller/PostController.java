@@ -2,8 +2,6 @@ package com.astroverse.backend.controller;
 
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.model.Post;
-import com.astroverse.backend.model.User;
-import com.astroverse.backend.model.Vote;
 import com.astroverse.backend.service.PostService;
 import com.astroverse.backend.service.UserService;
 import com.astroverse.backend.service.VotePostFacade;
@@ -17,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
