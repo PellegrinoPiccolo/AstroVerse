@@ -1,5 +1,6 @@
 package com.astroverse.backend.controller;
 
+import com.astroverse.backend.component.ChangeUserRequest;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.component.Hash;
 import com.astroverse.backend.model.User;
@@ -63,46 +64,60 @@ public class AuthControllerTest {
 
     @Test
     public void testLogin() {
-//        String email = "test@example.com";
-//        String password = "Password!22";
-//
-//        String hashedPassword = Hash.hashPassword(password);
-//        User mockUser = new User("Test", "User", "testuser", email, hashedPassword);
-//
-//        mockUser.setId(50);
-//
-//        String mockedAccessToken = "mockedAccessToken";
-//
-//        when(userService.getUser(email)).thenReturn(mockUser);
-//        when(jwtUtil.generateToken(
-//                mockUser.getId(),
-//                mockUser.getEmail(),
-//                mockUser.getUsername(),
-//                mockUser.getNome(),
-//                mockUser.getCognome(),
-//                mockUser.isAdmin()
-//        )).thenReturn(mockedAccessToken);
-//
-//        ResponseEntity<?> response = authController.loginUser(email, password);
-//
-//        assertEquals(200, response.getStatusCodeValue());
-//        Map<String, String> responseBody = (Map<String, String>) response.getBody();
-//        assertNotNull(responseBody);
-//        assertEquals(mockedAccessToken, responseBody.get("accessToken"));
-//
-//        verify(userService, times(1)).getUser(email);
-//        verify(jwtUtil, times(1)).generateToken(
-//                mockUser.getId(),
-//                mockUser.getEmail(),
-//                mockUser.getUsername(),
-//                mockUser.getNome(),
-//                mockUser.getCognome(),
-//                mockUser.isAdmin()
-//        );
+        User mockUser = new User("Test", "User", "testUser", "test@example.com", "Password!22");
+
+        when(userService.saveUser(any(User.class))).thenReturn(mockUser);
+        when(jwtUtil.generateToken(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome(), mockUser.isAdmin())).thenReturn("accessToken");
+        ResponseEntity<?> response = authController.registrationUser(
+                mockUser.getNome(),
+                mockUser.getCognome(),
+                mockUser.getEmail(),
+                mockUser.getUsername(),
+                mockUser.getPassword()
+        );
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        String hashPassword = Hash.hashPassword(mockUser.getPassword());
+        mockUser.setPassword(hashPassword);
+
+        when(userService.getUser("test@example.com")).thenReturn(mockUser);
+        when(jwtUtil.generateToken(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome(), mockUser.isAdmin())).thenReturn("accessToken");
+        ResponseEntity<?> responseLogin = authController.loginUser(mockUser.getEmail(), "Password!22");
+
+        assertEquals(HttpStatus.OK, responseLogin.getStatusCode());
     }
 
     @Test
     public void testModifyUserData() {
+        User mockUser = new User("Test", "User", "testUser", "test@example.com", "Password!22");
 
+        when(userService.saveUser(any(User.class))).thenReturn(mockUser);
+        when(jwtUtil.generateToken(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome(), mockUser.isAdmin())).thenReturn("accessToken");
+        ResponseEntity<?> response = authController.registrationUser(
+                mockUser.getNome(),
+                mockUser.getCognome(),
+                mockUser.getEmail(),
+                mockUser.getUsername(),
+                mockUser.getPassword()
+        );
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        mockUser.setPassword("");
+
+        mockUser.setEmail("test2@gmail.com");
+
+        ChangeUserRequest changeUserRequest = new ChangeUserRequest(mockUser, "");
+
+        when(userService.changeUserData(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome())).thenReturn(mockUser);
+        ResponseEntity<?> responseChangeData = authController.changeUserData(changeUserRequest);
+
+        assertEquals(HttpStatus.OK, responseChangeData.getStatusCode());
+
+        mockUser.setPassword("Prova!222");
+        changeUserRequest.setConfermaPassword("Prova!222");
+
+        when(userService.changeUserData(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome())).thenReturn(mockUser);
+        ResponseEntity<?> responseChangePassword = authController.changeUserData(changeUserRequest);
+
+        assertEquals(HttpStatus.OK, responseChangePassword.getStatusCode());
     }
 }

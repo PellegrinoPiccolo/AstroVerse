@@ -112,15 +112,11 @@ public class AuthController {
     }
 
     @PostMapping("/change-user-data")
-    public ResponseEntity<?> changeUserData(@RequestHeader("Authorization") String token, @RequestBody ChangeUserRequest request) {
+    public ResponseEntity<?> changeUserData(@RequestBody ChangeUserRequest request) {
         try {
             User user = request.getUser();
             String confermaPassword = request.getConfermaPassword();
             String password = user.getPassword();
-            token = token.replace("Bearer ", "");
-            if (!jwtUtil.isTokenValid(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token non valido");
-            }
             if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getNome().isEmpty() || user.getCognome().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno o più dati dell'utente mancanti");
             } else if(!isValidText(user.getEmail(), emailRegex)) {
