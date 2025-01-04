@@ -19,7 +19,7 @@ public class RequestInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(!isValidRequest(request)) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Richiesta non valida");
             return false;
         }
@@ -28,6 +28,9 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     private boolean isValidRequest(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization");
+        if (accessToken == null || !accessToken.startsWith("Bearer ")) {
+            return false;
+        }
         accessToken = accessToken.replace("Bearer ", "");
         if (tokenBlackListService.existToken(accessToken)) {
             return false;

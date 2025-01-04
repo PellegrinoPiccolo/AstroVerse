@@ -34,7 +34,7 @@
         </RouterLink>
       </li>
       <li>
-        <RouterLink to="/astroverse/about">
+        <RouterLink to="/astroverse">
           <FontAwesomeIcon :icon="faUsers" />
         </RouterLink>
       </li>

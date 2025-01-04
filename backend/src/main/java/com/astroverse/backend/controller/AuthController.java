@@ -37,8 +37,8 @@ public class AuthController {
         return pattern.matcher(text).matches();
     }
 
-    @GetMapping("/validate-token")
-    public ResponseEntity<?> validateToken(@RequestBody String token) {
+    @PostMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
         boolean isValid = jwtUtil.isTokenValid(token);
         if (isValid) {
             return ResponseEntity.ok("Token valido");   //200 token valido
@@ -107,7 +107,9 @@ public class AuthController {
             response.put("accessToken", accessToken);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utente non esiste");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "L'utente non esiste");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
