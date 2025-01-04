@@ -1,0 +1,141 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', serif;
+    min-height: 100vh;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1em 2em;
+    background-color: #262626;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.link-container {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    gap: 1.4em;
+    align-items: center;
+}
+
+.link-container li a {
+    text-decoration: none;
+    color: white;
+}
+
+.link-container .search-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .4em;
+    border: 1px rgba(224, 224, 224, 0.65) solid;
+    padding: .4em .6em;
+    border-radius: 10px;
+    background-color: #181818;
+}
+
+.link-container .search-container input {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+}
+
+.link-container .search-container input:focus {
+    outline: none;
+}
+
+.link-container .search-container .search-icon {
+    font-size: 14px;
+}
+
+.link-container li {
+    font-size: 24px;
+    color: white;
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2em 6em;
+    background-color: #262626;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto auto;
+    gap: .4em;
+}
+
+footer .footer-logo {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+}
+
+footer a {
+    text-decoration: none;
+    color: white;
+}
+
+footer .section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+}
+
+footer .section h2{
+    margin: 0;
+    font-weight: bold;
+    color: white;
+}
+
+footer .section ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+    padding: 0;
+    margin: 0;
+}
+
+footer .section ul li {
+    font-size: 15px;
+}
+
+footer .section ul li a:hover {
+    text-decoration: underline;
+}
+
+
+footer .section-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: flex-start;
+    gap: 5em;
+}
+
+footer .trademark {
+    grid-column: span 2;
+    text-align: center;
+    color: lightgray;
+    font-size: 12px;
+}
