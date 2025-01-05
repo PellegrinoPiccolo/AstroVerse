@@ -14,8 +14,8 @@ public class VoteService {
         this.voteRepository = voteRepository;
     }
 
-    public Vote saveVote(Vote vote) {
-        return voteRepository.save(vote);
+    public void saveVote(Vote vote) {
+        voteRepository.save(vote);
     }
 
     public Optional<Vote> existVote(long userId, long spaceId) {

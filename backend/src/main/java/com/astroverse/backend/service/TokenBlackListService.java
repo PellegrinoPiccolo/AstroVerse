@@ -12,8 +12,8 @@ public class TokenBlackListService {
         this.tokenBlackListRepository = tokenBlackListRepository;
     }
 
-    public TokenBlackList saveAccessToken(TokenBlackList token) {
-        return tokenBlackListRepository.save(token);
+    public void saveAccessToken(TokenBlackList token) {
+        tokenBlackListRepository.save(token);
     }
 
     public boolean existToken(String token) {

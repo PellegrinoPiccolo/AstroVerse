@@ -1,4 +1,4 @@
-//Codifica delle passworcon Spring Security
+//Codifica delle password con Spring Security
 package com.astroverse.backend.component;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

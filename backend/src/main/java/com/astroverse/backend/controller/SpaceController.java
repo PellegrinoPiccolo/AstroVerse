@@ -16,12 +16,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("api/space")
+@RequestMapping("/api/space")
 public class SpaceController {
     private final SpaceService spaceService;
     private static final String titoloRegex = "^[A-Za-zÀ-ù0-9,‘\\-\\s]{2,50}$";
@@ -30,6 +32,7 @@ public class SpaceController {
     private static final String directory = "uploads/";
     private final UserService userService;
     private final UserSpaceService userSpaceService;
+    private final Map<String, String> response = new HashMap<>();
 
     public SpaceController(SpaceService spaceService, UserService userService, UserSpaceService userSpaceService) {
         this.spaceService = spaceService;
@@ -45,18 +48,18 @@ public class SpaceController {
     @PostMapping("/create")
     public ResponseEntity<?> createSpace(@RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
         if (!isValidText(titolo, titoloRegex) && titolo.isEmpty()) {
-            return ResponseEntity.status(400).body("Errore nel formato del titolo");
+            return ResponseEntity.status(400).body(response.put("message", "Errore nel formato del titolo"));
         } else if (!isValidText(argomento, argomentoRegex) && argomento.isEmpty()) {
-            return ResponseEntity.status(400).body("Errore nel formato dell'argomento");
+            return ResponseEntity.status(400).body(response.put("error", "Errore nel formato dell'argomento"));
         } else if (!isValidText(descrizione, descrizioneRegex) && descrizione.isEmpty()) {
-            return ResponseEntity.status(400).body("Errore nel formato della descrizione");
+            return ResponseEntity.status(400).body(response.put("error", "Errore nel formato della descrizione"));
         }
         Space space = new Space(titolo, argomento, descrizione);
         Space createdSpace = spaceService.saveSpace(space);
         if (createdSpace != null) {
             if (file != null && !file.isEmpty()) {
                 if(!checkImageFile(file)) {
-                    return ResponseEntity.status(400).body("Formato immagine non corretto");
+                    return ResponseEntity.status(400).body(response.put("error", "Formato immagine non valido"));
                 }
                 Path path = Paths.get(directory);
                 Path spacePath = Paths.get(directory + "/" + createdSpace.getId() + "/");
@@ -75,7 +78,7 @@ public class SpaceController {
                     }
                 }
                 if (!saveImageFile(createdSpace, spacePath, file)) {
-                    return ResponseEntity.status(500).body("Errore nel caricamento dell'immagine");
+                    return ResponseEntity.status(500).body(response.put("error", "Errore nel caricamento dell'immagine"));
                 }
             }
             token = token.replace("Bearer ", "");
@@ -83,25 +86,25 @@ public class SpaceController {
             String email = decoded.getClaim("email").asString();
             UserSpace userSpace = new UserSpace(userService.getUser(email), createdSpace);
             userSpaceService.saveUserSpaceAdmin(userSpace);
-            return ResponseEntity.ok("Spazio Creato");
+            return ResponseEntity.ok(response.put("message", "Spazio Creato"));
         }
-        return ResponseEntity.status(500).body("Errore nella creazione dell spazio");
+        return ResponseEntity.status(500).body(response.put("error", "Errore nella creazione dell spazio"));
     }
 
     @GetMapping("/view/{id}")
     public ResponseEntity<?> viewSpace(@PathVariable Long id) {
         Optional<Space> optional = spaceService.getSpace(id);
         if (optional.isPresent()) {
-            return ResponseEntity.ok(optional.get());
+            return ResponseEntity.ok(Map.of("message", optional.get()));
         } else {
-            return ResponseEntity.status(400).body("Questo spazio non esiste");
+            return ResponseEntity.status(400).body(response.put("error", "Questo spazio non esiste"));
         }
     }
 
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribeSpace(@RequestParam Long idSpazio, @RequestHeader("Authorization") String token) {
         if (idSpazio == null) {
-            return ResponseEntity.status(500).body("Errore nell'iscrizione allo spazio desiderato");
+            return ResponseEntity.status(500).body(response.put("error", "Errore nell'iscrizione allo spazio desiderato"));
         }
         token = token.replace("Bearer ", "");
         DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
@@ -109,15 +112,15 @@ public class SpaceController {
         User user = userService.getUser(email);
         Optional<Space> optional = spaceService.getSpace(idSpazio);
         if (optional.isEmpty()) {
-            return ResponseEntity.status(400).body("Lo spazio non esiste");
+            return ResponseEntity.status(400).body(response.put("error", "Lo spazio non esiste"));
         }
         Space space = optional.get();
         UserSpace userSpace = new UserSpace(user, space);
         if(!userSpaceService.existSubscribe(userSpace)) {
             userSpaceService.saveUserSpace(userSpace);
-            return ResponseEntity.ok("Iscrizione allo spazio avvenuta con successo");
+            return ResponseEntity.ok(response.put("message", "Iscrizione allo spazio avvenuta con successo"));
         } else  {
-            return ResponseEntity.status(400).body("Iscrizione allo spazio già effettuata");
+            return ResponseEntity.status(400).body(response.put("error", "Iscrizione allo spazio già effettuata"));
         }
     }
 
@@ -125,7 +128,7 @@ public class SpaceController {
     public ResponseEntity<?> modifySpace(@PathVariable Long id, @RequestHeader("Authorization") String token, @RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file) {
         Optional<Space> optionalSpace = spaceService.getSpace(id);
         if (optionalSpace.isEmpty()) {
-            return ResponseEntity.status(400).body("Questo spazio non esiste");
+            return ResponseEntity.status(400).body(response.put("error", "Questo spazio non esiste"));
         }
         Space space = optionalSpace.get();
         token = token.replace("Bearer ", "");
@@ -134,21 +137,21 @@ public class SpaceController {
         User user = userService.getUser(email);
         UserSpace userSpace = new UserSpace(user, space);
         if (!userSpaceService.existSubscribe(userSpace)) {
-            return ResponseEntity.status(400).body("L'utente non è iscritto allo spazio");
+            return ResponseEntity.status(400).body(response.put("error", "L'utente non è iscritto allo spazio"));
         }
         if(!userSpaceService.isUserAdmin(userSpace)) {
-            return ResponseEntity.status(400).body("L'utente non è admin");
+            return ResponseEntity.status(400).body(response.put("error", "L'utente non è admin"));
         }
         if (!isValidText(titolo, titoloRegex) && titolo.isEmpty()) {
-            return ResponseEntity.status(400).body("Errore nel formato del titolo");
+            return ResponseEntity.status(400).body(response.put("error", "Errore nel formato del titolo"));
         } else if (!isValidText(argomento, argomentoRegex) && argomento.isEmpty()) {
-            return ResponseEntity.status(400).body("Errore nel formato dell'argomento");
+            return ResponseEntity.status(400).body(response.put("error", "Errore nel formato dell'argomento"));
         } else if (!isValidText(descrizione, descrizioneRegex) && descrizione.isEmpty()) {
-            return ResponseEntity.status(400).body("Errore nel formato della descrizione");
+            return ResponseEntity.status(400).body(response.put("error", "Errore nel formato della descrizione"));
         }
         if (file != null && !file.isEmpty()) {
             if(!checkImageFile(file)) {
-                return ResponseEntity.status(400).body("Formato immagine non corretto");
+                return ResponseEntity.status(400).body(response.put("error", "Errore nel formato dell'immagine"));
             }
             Path path = Paths.get(directory);
             Path spacePath = Paths.get(directory + "/" + space.getId() + "/");
@@ -168,27 +171,29 @@ public class SpaceController {
                 throw new RuntimeException(e);
             }
             if (!updateImageFile(space, spacePath, file)) {
-                return ResponseEntity.status(500).body("Errore nel caricamento dell'immagine");
+                return ResponseEntity.status(500).body(response.put("error", "Errore nel caricamento dell'immagine"));
             }
-            return ResponseEntity.ok("Modifica allo spazio avvenuta con successo");
+            return ResponseEntity.ok(response.put("message", "Modifica allo spazio avvenuta con successo"));
         }
         space.setTitle(titolo);
         space.setArgument(argomento);
         space.setDescription(descrizione);
         if (spaceService.updateSpace(space.getId(), space.getTitle(), space.getDescription(), space.getArgument()) == 0) {
-            return ResponseEntity.status(500).body("Errore nel salvataggio dello spazio");
+            return ResponseEntity.status(500).body(response.put("error", "Errore nel salvataggio dello spazio"));
         }
-        return ResponseEntity.ok("Spazio modificato correttamente");
+        return ResponseEntity.ok(response.put("message", "Spazio modificato correttamente"));
     }
 
     @GetMapping("/search/{param}")
     public ResponseEntity<?> searchSpace(@PathVariable String param) {
-        return ResponseEntity.ok(spaceService.searchSpace(param));
+        return ResponseEntity.ok(Map.of("message", spaceService.searchSpace(param)));
     }
 
     protected boolean checkImageFile(MultipartFile file) {
         String contentType = file.getContentType();
-        return contentType.equals("image/jpeg") || contentType.equals("image/png");
+        if (contentType != null) {
+            return contentType.equals("image/jpeg") || contentType.equals("image/png");
+        } else return false;
     }
 
     protected boolean saveImageFile(Space space, Path spacePath, MultipartFile file) {
