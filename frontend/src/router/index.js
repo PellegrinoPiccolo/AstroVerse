@@ -15,6 +15,7 @@ const checkUser = async () => {
         return true
       })
       .catch((error) => {
+        console.log(error.message)
         return false;
       })
 }
@@ -25,7 +26,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'AuthView',
-      components: AuthView
+      component: AuthView
     },
     {
       path: '/astroverse',

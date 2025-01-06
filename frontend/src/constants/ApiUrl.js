@@ -23,9 +23,24 @@ export const apiTokenJson = axios.create({
     }
 })
 
-export const ApiJson = axios.create({
+export const apiJson = axios.create({
     baseURL: `${ServerUrl}/api`,
     headers: {
         'Content-Type': 'application/json'
+    }
+})
+
+export const apiForm = axios.create({
+    baseURL: `${ServerUrl}/api`,
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+})
+
+export const apiTokenForm = axios.create({
+    baseURL: `${ServerUrl}/api`,
+    headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
 })
