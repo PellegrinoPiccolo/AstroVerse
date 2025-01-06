@@ -45,7 +45,8 @@ public class AuthController {
         if (isValid) {
             return ResponseEntity.ok(response.put("message", "Token valido"));   //200 token valido
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response.put("message", "Token non valido")); //401 non autorizzato all'accesso al token
+            response.put("message", "Token non valido");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response); //401 non autorizzato all'accesso al token
         }
     }
 
@@ -53,19 +54,24 @@ public class AuthController {
     public ResponseEntity<?> registrationUser(@RequestParam String nome, @RequestParam String cognome, @RequestParam String email, @RequestParam String username, @RequestParam String password) {
         User user = new User(nome, cognome, username, email, password);
         if (!isValidText(user.getNome(), namesRegex)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response.put("error", "Nome non valido"));
+            response.put("error", "Nome non valido");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         if (!isValidText(user.getCognome(), namesRegex)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response.put("error", "Cognome non valido"));
+            response.put("error", "Cognome non valido");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         if (!isValidText(user.getUsername(), usernameRegex)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Username non valido"));
+            response.put("error", "Username non valido");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         if(!isValidText(user.getEmail(), emailRegex)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Email non valida"));
+            response.put("error", "Email non valida");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         if(!isValidText(user.getPassword(), passwordRegex)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Password non valida"));
+            response.put("error", "Password non valida");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         String hashPassword = Hash.hashPassword(user.getPassword());
         user.setPassword(hashPassword);
@@ -79,11 +85,14 @@ public class AuthController {
                     user.getCognome(),
                     user.isAdmin());
             if (accessToken == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response.put("error", "Errore nella generazione del token"));
+                response.put("error", "Errore nella generazione del token");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
-            return ResponseEntity.ok(response.put("accessToken", accessToken));
+            response.put("accessToken", accessToken);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Utente già esistente"));
+            response.put("error", "Utente già esistente");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -93,7 +102,8 @@ public class AuthController {
             User user = userService.getUser(email);
             String userPassword = user.getPassword();
             if(!Hash.checkPassword(password, userPassword)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Password errata"));
+                response.put("error", "Password errata");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             String accessToken = jwtUtil.generateToken(
                     user.getId(),
@@ -103,9 +113,11 @@ public class AuthController {
                     user.getCognome(),
                     user.isAdmin()
             );
-            return ResponseEntity.ok(response.put("accessToken", accessToken));
+            response.put("accessToken", accessToken);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "L'utente non esiste"));
+            response.put("error", "L'utente non esiste");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -116,32 +128,41 @@ public class AuthController {
             String confermaPassword = request.getConfermaPassword();
             String password = user.getPassword();
             if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getNome().isEmpty() || user.getCognome().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Uno o più dati dell'utente mancanti"));
+                response.put("error", "Uno o più dati dell'utente mancanti");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } else if(!isValidText(user.getEmail(), emailRegex)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Email non valida"));
+                response.put("error", "Email non valida");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } else if (!isValidText(user.getNome(), namesRegex)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Nome non valido"));
+                response.put("error", "Nome non valido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } else if(!isValidText(user.getCognome(), namesRegex)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Cognome non valido"));
+                response.put("error", "Cognome non valido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } else if (!isValidText(user.getUsername(), usernameRegex)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Username non valido"));
+                response.put("error", "Username non valido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } else {
                 user = userService.changeUserData(user.getId(), user.getEmail(), user.getUsername(), user.getNome(), user.getCognome());
             }
             if(!password.isEmpty()) {
                 if(!isValidText(password, passwordRegex)) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Password non valida"));
+                    response.put("error", "Password non valida");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 } else if(!password.equals(confermaPassword)) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "La password di conferma non è diversa dalla nuova pasword"));
+                    response.put("error", "La password di conferma non è diversa dalla nuova pasword");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 } else {
                     String hashPassword = Hash.hashPassword(password);
                     user.setPassword(hashPassword);
                     userService.changePassword(user.getUsername(), hashPassword);
                 }
             }
-            return ResponseEntity.ok(response.put("message", "Dati aggiornati"));
+            response.put("message", "Dati aggiornati");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", e.getMessage()));
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -150,14 +171,17 @@ public class AuthController {
         try {
             token = token.replace("Bearer ", "");
             if (!jwtUtil.isTokenValid(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response.put("error", "Token non valido"));
+                response.put("error", "Token non valido");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
             TokenBlackList tokenBlackList = new TokenBlackList();
             tokenBlackList.setAccessToken(token);
             tokenBlackListService.saveAccessToken(tokenBlackList);
-            return ResponseEntity.ok(response.put("message", "Logout effettuato con successo"));
+            response.put("message", "Logout effettuato con successo");
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "L'utente non esiste"));
+            response.put("error", "L'utente non esiste");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -166,18 +190,21 @@ public class AuthController {
         try {
             token = token.replace("Bearer ", "");
             if(!jwtUtil.isTokenValid(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response.put("error", "Token non valido"));
+                response.put("error", "Token non valido");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
             DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
             Long idString = decodedJWT.getClaim("id").asLong();
             if (idString == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "Id utente non presente"));
+                response.put("error", "Id utente non presente");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             User user = userService.getUserData(idString);
             UserDTO userDTO = new UserDTO(user.getUserSpaces(), user.getUserPosts(), user.getNome(), user.getCognome(), user.getUsername(), user.getEmail());
             return ResponseEntity.ok(Map.of("message", userDTO));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.put("error", "L'utente non esiste"));
+            response.put("error", "L'utente non esiste");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 }

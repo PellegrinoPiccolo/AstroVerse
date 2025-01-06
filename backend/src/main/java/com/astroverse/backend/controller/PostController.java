@@ -43,14 +43,16 @@ public class PostController {
     public ResponseEntity<?> createPost(@RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token, @PathVariable long id) {
         token = token.replace("Bearer ", "");
         if(!isValidText(testo, testoRegex)) {
-            return ResponseEntity.status(400).body(response.put("error", "Formato del testo non valido"));
+            response.put("error", "Formato del testo non valido");
+            return ResponseEntity.status(400).body(response);
         }
         DecodedJWT decoded = JwtUtil.JwtDecode(token);
         Post post = new Post(testo, id, decoded.getClaim("id").asLong());
         Post createdPost = postService.savePost(post);
         if (file != null && !file.isEmpty()) {
             if(!checkImageFile(file)) {
-                return ResponseEntity.status(400).body(response.put("error", "Formato dell'immagine non valido"));
+                response.put("error", "Formato dell'immagine non valido");
+                return ResponseEntity.status(400).body(response);
             }
             Path path = Paths.get(directory);
             Path postPath = Paths.get(directory + "/" + createdPost.getId() + "/");
@@ -79,35 +81,41 @@ public class PostController {
             int v = postService.saveImage(createdPost.getId(), post.getFile());
             System.out.println(createdPost.getId() + " ID DEL NUOVO POST" + v);
             if (v == 0) {
-                return ResponseEntity.status(500).body(response.put("error", "Errore nel salvataggio dell'immagine"));
+                response.put("error", "Errore nel salvataggio dell'immagine");
+                return ResponseEntity.status(500).body(response);
             }
         }
-        return ResponseEntity.ok(response.put("message", "Poste creato con successo"));
+        response.put("message", "Poste creato con successo");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/vote/{id}")
     public ResponseEntity<?> votePost(@PathVariable long id, @RequestParam boolean vote, @RequestHeader("Authorization") String token) {
         String response = votePostFacade.votePost(id, vote, token);
-        return ResponseEntity.ok(this.response.put("message", response));
+        this.response.put("message", response);
+        return ResponseEntity.ok(this.response);
     }
 
     @PostMapping("/modify/{id}")
     public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "");
         if (!isValidText(testo, testoRegex)) {
-            return ResponseEntity.status(400).body(response.put("error", "Formato del testo non valido"));
+            response.put("error", "Formato del testo non valido");
+            return ResponseEntity.status(400).body(response);
         }
         DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
         long idUtente = decodedJWT.getClaim("id").asLong();
         if(!postService.isCreationUser(idUtente, id)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response.put("error", "Modifica del post non autorizzata"));
+            response.put("error", "Modifica del post non autorizzata");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
         Post post = postService.getPost(id);
         post.setTesto(testo);
         postService.savePost(post);
         if (file != null && !file.isEmpty()) {
             if(!checkImageFile(file)) {
-                return ResponseEntity.status(400).body(response.put("error", "Formato dell'immagine non valido"));
+                response.put("error", "Formato dell'immagine non valido");
+                return ResponseEntity.status(400).body(response);
             }
             Path path = Paths.get(directory);
             Path postPath = Paths.get(directory + "/" + post.getId() + "/");
@@ -131,14 +139,13 @@ public class PostController {
                 throw new RuntimeException(e);
             }
         }
-        return ResponseEntity.ok(response.put("message", "La modifica del post è avvenuta con successo"));
+        response.put("message", "La modifica del post è avvenuta con successo");
+        return ResponseEntity.ok(response);
     }
 
     protected boolean checkImageFile(MultipartFile file) {
         String contentType = file.getContentType();
-        if (contentType != null) {
-            return contentType.equals("image/jpeg") || contentType.equals("image/png");
-        } else return false;
+        return contentType.equals("image/jpeg") || contentType.equals("image/png");
     }
 
     public boolean isValidText(String text, String regex) {
