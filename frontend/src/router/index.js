@@ -3,27 +3,20 @@ import HomeView from '@/views/HomeView.vue'
 import Nav from "@/views/Nav.vue";
 import AuthView from "@/views/AuthView.vue";
 import Cookies from 'js-cookie';
-import ServerUrl from "@/assets/ServerUrl.js";
+import {apiUrlToken} from "@/constants/ApiUrl.js";
 
 const checkUser = async () => {
   const accessToken = Cookies.get('accessToken') || '';
   if (accessToken === '') {
     return false
   }
-  const response = await fetch(`${ServerUrl}/api/auth/validate-token`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`
-    },
-    credentials: 'include'
-  })
-  const data = await response.json()
-  console.log(response.status)
-  if (response.ok) {
-    return true
-  } else {
-    return false
-  }
+  apiUrlToken.post('/auth/validate-token')
+      .then((response) => {
+        return true
+      })
+      .catch((error) => {
+        return false;
+      })
 }
 
 const router = createRouter({

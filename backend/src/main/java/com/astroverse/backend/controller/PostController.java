@@ -3,9 +3,7 @@ package com.astroverse.backend.controller;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.model.Post;
 import com.astroverse.backend.service.PostService;
-import com.astroverse.backend.service.UserService;
 import com.astroverse.backend.service.VotePostFacade;
-import com.astroverse.backend.service.VoteService;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +23,13 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/post")
 public class PostController {
     private static final String testoRegex = "^[\\w\\s\\p{Punct}]{1,400}$";
-    private final UserService userService;
     private final PostService postService;
-    private final VoteService voteService;
     private static final String directory = "uploads-post/";
     private final Map<String, String> response = new HashMap<>();
     private final VotePostFacade votePostFacade;
 
-    public PostController(UserService userService, PostService postService, VoteService voteService, VotePostFacade votePostFacade) {
-        this.userService = userService;
+    public PostController(PostService postService, VotePostFacade votePostFacade) {
         this.postService = postService;
-        this.voteService = voteService;
         this.votePostFacade = votePostFacade;
     }
 
