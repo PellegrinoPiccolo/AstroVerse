@@ -20,6 +20,14 @@ public class RequestInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
         if(!isValidRequest(request)) {
+            if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+                response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+                response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+                response.setHeader("Access-Control-Allow-Credentials", "true");
+                response.setStatus(HttpServletResponse.SC_OK);
+                return true;
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Richiesta non valida");
             return false;
@@ -28,6 +36,7 @@ public class RequestInterceptor implements HandlerInterceptor {
     }
 
     private boolean isValidRequest(HttpServletRequest request) {
+
         String accessToken = request.getHeader("Authorization");
         if (accessToken == null || !accessToken.startsWith("Bearer ")) {
             return false;

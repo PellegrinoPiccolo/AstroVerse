@@ -41,9 +41,11 @@ public class AuthController {
 
     @PostMapping("/validate-token")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
         boolean isValid = jwtUtil.isTokenValid(token);
         if (isValid) {
-            return ResponseEntity.ok(response.put("message", "Token valido"));   //200 token valido
+            response.put("message", "Token valido");
+            return ResponseEntity.ok(response);   //200 token valido
         } else {
             response.put("message", "Token non valido");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response); //401 non autorizzato all'accesso al token

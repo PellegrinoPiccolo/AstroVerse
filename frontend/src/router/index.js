@@ -10,14 +10,13 @@ const checkUser = async () => {
   if (accessToken === '') {
     return false
   }
-  apiUrlToken.post('/auth/validate-token')
-      .then((response) => {
-        return true
-      })
-      .catch((error) => {
-        console.log(error.message)
-        return false;
-      })
+  try {
+    await apiUrlToken.post('/auth/validate-token');
+    return true;
+  } catch (error) {
+    console.log(error.message);
+    return false;
+  }
 }
 
 const router = createRouter({
@@ -45,7 +44,11 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  if (to.name !== 'AuthView' && !(await checkUser())) {
+  const isValid = await checkUser()
+  if (to.name === 'AuthView' && isValid) {
+    history.pushState({}, null, '/astroverse')
+    next({name: 'home'})
+  } else if (to.name !== 'AuthView' && !isValid) {
     history.pushState({}, null, '/')
     next({name: 'AuthView'});
   } else {
