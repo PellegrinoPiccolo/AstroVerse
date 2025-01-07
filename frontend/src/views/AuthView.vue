@@ -1,10 +1,10 @@
 <script setup>
   import {ref, watchEffect} from "vue";
   import {useRoute, useRouter} from 'vue-router';
-  import {apiForm} from "@/constants/ApiUrl.js";
+  import {apiTokenForm} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
-  import {isValidEmail, isValidPassword, isValidText, isValidUsername} from "@/constants/regexTest.js";
+  import {isNotOrNull, isValidEmail, isValidPassword, isValidText, isValidUsername} from "@/constants/regexTest.js";
   import Cookies from "js-cookie";
 
   const current = ref('login');
@@ -25,11 +25,31 @@
     current.value = (route.query.page || 'login').trim().toLowerCase();
   })
 
-  const loginUser = () => {
-
+  const loginUser = async () => {
+    if(isNotOrNull(user.value.email) || isNotOrNull(user.value.password)) {
+      toast.error("Nessun campo può essere vuoto");
+      return
+    }
+    const body = new URLSearchParams()
+    body.append("email", user.value.email)
+    body.append("password", user.value.password)
+    await apiTokenForm.post('/auth/login', body)
+        .then(async (response) => {
+          const token = await response.data.accessToken
+          await Cookies.set("accessToken", token)
+          if(Cookies.get("accessToken")) {
+            await router.push("/astroverse")
+          }
+        })
+        .catch((error) => {
+          console.error(error.response)
+          if(error.response.data.error) {
+            toast.error(error.response.data.error);
+          }
+        })
   }
 
-  const registrationUser = () => {
+  const registrationUser = async () => {
     if(!isValidText(user.value.nome) || !isValidText(user.value.cognome)) {
       toast.error("Nome o cognome non valido");
       return
@@ -53,14 +73,15 @@
     body.append("email", user.value.email)
     body.append("password", user.value.password)
     body.append("confermaPassowrd", user.value.confermaPassword)
-    apiForm.post('/auth/registration', body)
-        .then((response) => {
-          const token = response.data.accessToken
-          Cookies.set('accessToken', token)
-          router.push("/astroverse")
+    await apiTokenForm.post('/auth/registration', body)
+        .then(async (response) => {
+          const token = await response.data.accessToken
+          await Cookies.set('accessToken', token)
+          await router.push("/astroverse")
         })
         .catch((error) => {
           console.error(error)
+          toast.error("Registrazione non andata a buon fine");
         })
   }
 </script>
