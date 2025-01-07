@@ -25,7 +25,6 @@ public class PostController {
     private static final String testoRegex = "^[\\w\\s\\p{Punct}]{1,400}$";
     private final PostService postService;
     private static final String directory = "uploads-post/";
-    private final Map<String, String> response = new HashMap<>();
     private final VotePostFacade votePostFacade;
 
     public PostController(PostService postService, VotePostFacade votePostFacade) {
@@ -35,6 +34,7 @@ public class PostController {
 
     @PostMapping("/create/{id}")
     public ResponseEntity<?> createPost(@RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token, @PathVariable long id) {
+        Map<String, String> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         if(!isValidText(testo, testoRegex)) {
             response.put("error", "Formato del testo non valido");
@@ -85,13 +85,15 @@ public class PostController {
 
     @PostMapping("/vote/{id}")
     public ResponseEntity<?> votePost(@PathVariable long id, @RequestParam boolean vote, @RequestHeader("Authorization") String token) {
-        String response = votePostFacade.votePost(id, vote, token);
-        this.response.put("message", response);
-        return ResponseEntity.ok(this.response);
+        Map<String, String> response = new HashMap<>();
+        String res = votePostFacade.votePost(id, vote, token);
+        response.put("message", res);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/modify/{id}")
     public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         if (!isValidText(testo, testoRegex)) {
             response.put("error", "Formato del testo non valido");

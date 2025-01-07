@@ -4,6 +4,7 @@ import Nav from "@/views/Nav.vue";
 import AuthView from "@/views/AuthView.vue";
 import Cookies from 'js-cookie';
 import {apiUrlToken} from "@/constants/ApiUrl.js";
+import UserView from "@/views/UserView.vue";
 
 const checkUser = async () => {
   const accessToken = Cookies.get('accessToken') || '';
@@ -37,6 +38,11 @@ const router = createRouter({
           path: '',
           name: 'HomeView',
           component: HomeView
+        },
+        {
+          path: 'user',
+          name: 'UserView',
+          component: UserView
         }
       ]
     },

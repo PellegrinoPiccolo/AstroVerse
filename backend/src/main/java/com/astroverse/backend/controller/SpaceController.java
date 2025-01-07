@@ -32,7 +32,6 @@ public class SpaceController {
     private static final String directory = "uploads/";
     private final UserService userService;
     private final UserSpaceService userSpaceService;
-    private final Map<String, String> response = new HashMap<>();
 
     public SpaceController(SpaceService spaceService, UserService userService, UserSpaceService userSpaceService) {
         this.spaceService = spaceService;
@@ -47,6 +46,7 @@ public class SpaceController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createSpace(@RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
         if (!isValidText(titolo, titoloRegex) && titolo.isEmpty()) {
             response.put("message", "Errore nel formato del titolo");
             return ResponseEntity.status(400).body(response);
@@ -100,6 +100,7 @@ public class SpaceController {
 
     @GetMapping("/view/{id}")
     public ResponseEntity<?> viewSpace(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
         Optional<Space> optional = spaceService.getSpace(id);
         if (optional.isPresent()) {
             return ResponseEntity.ok(Map.of("message", optional.get()));
@@ -111,6 +112,7 @@ public class SpaceController {
 
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribeSpace(@RequestParam Long idSpazio, @RequestHeader("Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
         if (idSpazio == null) {
             response.put("error", "Errore nell'iscrizione allo spazio desiderato");
             return ResponseEntity.status(500).body(response);
@@ -138,6 +140,7 @@ public class SpaceController {
 
     @PostMapping("/modify/{id}")
     public ResponseEntity<?> modifySpace(@PathVariable Long id, @RequestHeader("Authorization") String token, @RequestParam String titolo, @RequestParam String argomento, @RequestParam String descrizione, @RequestParam(value = "file", required = false) MultipartFile file) {
+        Map<String, String> response = new HashMap<>();
         Optional<Space> optionalSpace = spaceService.getSpace(id);
         if (optionalSpace.isEmpty()) {
             response.put("error", "Questo spazio non esiste");

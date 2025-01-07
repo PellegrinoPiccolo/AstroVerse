@@ -24,7 +24,6 @@ public class Space {
     private String image;
     private String description;
     @OneToMany(mappedBy = "space", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Set<UserSpace> userSpaces = new HashSet<>();
     private LocalDateTime createdAt;
     @PrePersist

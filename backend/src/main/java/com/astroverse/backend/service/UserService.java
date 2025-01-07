@@ -30,10 +30,10 @@ public class UserService {
         return user;
     }
 
-    public User changeUserData(long id, String email, String username, String name, String lastName) {
-        if(userRepository.existsByEmailAndIdNot(email, id)) {
+    public User changeUserData(long id, String email, String username, String name, String lastName, String oldEmail, String oldUsername) {
+        if(userRepository.existsByEmailAndIdNot(email, id) && !email.equals(oldEmail)) {
             throw new IllegalArgumentException("Email già in uso");
-        } else if(userRepository.existsByUsernameAndIdNot(username, id)) {
+        } else if(userRepository.existsByUsernameAndIdNot(username, id) && !username.equals(oldUsername)) {
             throw new IllegalArgumentException("Username già in uso");
         }
         User user = new User();
@@ -61,5 +61,12 @@ public class UserService {
             throw new IllegalArgumentException("Utente non esistente");
         }
         return userRepository.getUserById(id);
+    }
+
+    public String getOldPassword(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("Utente non esistente");
+        }
+        return userRepository.findPasswordById(id);
     }
 }

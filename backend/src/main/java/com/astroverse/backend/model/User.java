@@ -24,7 +24,6 @@ public class User {
     private long id;
     private boolean isAdmin;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Set<UserSpace> userSpaces = new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserPost> userPosts = new HashSet<>();

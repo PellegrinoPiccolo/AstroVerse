@@ -18,7 +18,8 @@
     "js-cookie": "^3.0.5",
     "vue": "^3.5.13",
     "vue-router": "^4.4.5",
-    "vue3-toastify": "^0.2.8"
+    "vue3-toastify": "^0.2.8",
+    "vuestic-ui": "^1.10.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

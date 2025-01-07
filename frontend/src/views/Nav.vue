@@ -23,9 +23,9 @@
 <template>
   <nav>
     <div class="logo-container">
-      <a href="">
+      <RouterLink to="/astroverse">
         <img class="logo" :src="logo" alt="AstroVerse logo"/>
-      </a>
+      </RouterLink>
     </div>
     <ul class="link-container">
       <li>
@@ -44,7 +44,7 @@
         </RouterLink>
       </li>
       <li>
-        <RouterLink to="/astroverse">
+        <RouterLink to="/astroverse/user">
           <FontAwesomeIcon :icon="faUser" />
         </RouterLink>
       </li>

@@ -107,9 +107,9 @@
       <label for="email">Email</label>
       <input type="email" id="email" placeholder="Inserisci email" v-model="user.email">
       <label for="password"></label>
-      <input type="text" id="password" placeholder="Inserisci password" v-model="user.password">
+      <input type="password" id="password" placeholder="Inserisci password" v-model="user.password">
       <label for="conferma-password"></label>
-      <input type="text" id="conferma-password" placeholder="Conferma la password" v-model="user.confermaPassword">
+      <input type="password" id="conferma-password" placeholder="Conferma la password" v-model="user.confermaPassword">
       <button @click="registrationUser">Registrazione</button>
     </div>
     <p v-if="current === 'login'">Non hai un account? <RouterLink :to="{query: {page: 'registration'}}">Registrati</RouterLink></p>

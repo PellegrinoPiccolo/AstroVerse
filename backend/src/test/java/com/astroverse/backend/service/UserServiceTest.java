@@ -41,7 +41,7 @@ public class UserServiceTest {
         when(userRepository.existsByEmailAndIdNot("orny05@gmail.com", user.getId())).thenReturn(false);
         when(userRepository.existsByUsernameAndIdNot("Orni05", user.getId())).thenReturn(false);
         when(userRepository.updateUserById(user.getId(), "Ornella", "Zarrella", "orny05@gmail.com", "Orni05")).thenReturn(1);
-        user = userService.changeUserData(user.getId(), "orny05@gmail.com", "Orni05", "Ornella", "Zarrella");
+        user = userService.changeUserData(user.getId(), "orny05@gmail.com", "Orni05", "Ornella", "Zarrella", "provatest@gmail.com", "provaUsername");
         verify(userRepository, times(1)).updateUserById(
                 user.getId(),
                 "Ornella",

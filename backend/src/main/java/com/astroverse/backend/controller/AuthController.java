@@ -26,7 +26,6 @@ public class AuthController {
     private static final String usernameRegex = "^[A-Za-z0-9._\\-\\s]{3,20}$";
     private static final String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
     private static final String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$";
-    private final Map<String,String> response = new HashMap<>();    //Hashmap per la response in Json, utilizza la formula <K, V> dove K è l'header della response e V il valore di ritorno
 
     public AuthController(JwtUtil jwtUtil, UserService userService, TokenBlackListService tokenBlackListService) {
         this.jwtUtil = jwtUtil;
@@ -41,6 +40,7 @@ public class AuthController {
 
     @PostMapping("/validate-token")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         boolean isValid = jwtUtil.isTokenValid(token);
         if (isValid) {
@@ -54,6 +54,7 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> registrationUser(@RequestParam String nome, @RequestParam String cognome, @RequestParam String email, @RequestParam String username, @RequestParam String password) {
+        Map<String, String> response = new HashMap<>();
         User user = new User(nome, cognome, username, email, password);
         if (!isValidText(user.getNome(), namesRegex)) {
             response.put("error", "Nome non valido");
@@ -100,6 +101,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
+        Map<String, String> response = new HashMap<>();
         try {
             User user = userService.getUser(email);
             String userPassword = user.getPassword();
@@ -124,11 +126,17 @@ public class AuthController {
     }
 
     @PostMapping("/change-user-data")
-    public ResponseEntity<?> changeUserData(@RequestBody ChangeUserRequest request) {
+    public ResponseEntity<?> changeUserData(@RequestBody ChangeUserRequest request, @RequestHeader("Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
         try {
+            token = token.replace("Bearer ", "");
             User user = request.getUser();
             String confermaPassword = request.getConfermaPassword();
             String password = user.getPassword();
+            DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
+            long id = decodedJWT.getClaim("id").asLong();
+            String oldEmail = decodedJWT.getClaim("email").asString();
+            String oldUsername = decodedJWT.getClaim("username").asString();
             if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getNome().isEmpty() || user.getCognome().isEmpty()) {
                 response.put("error", "Uno o più dati dell'utente mancanti");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -145,14 +153,18 @@ public class AuthController {
                 response.put("error", "Username non valido");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } else {
-                user = userService.changeUserData(user.getId(), user.getEmail(), user.getUsername(), user.getNome(), user.getCognome());
+                user = userService.changeUserData(id, user.getEmail(), user.getUsername(), user.getNome(), user.getCognome(), oldEmail, oldUsername);
             }
             if(!password.isEmpty()) {
+                String oldPassword = userService.getOldPassword(id);
                 if(!isValidText(password, passwordRegex)) {
                     response.put("error", "Password non valida");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 } else if(!password.equals(confermaPassword)) {
                     response.put("error", "La password di conferma non è diversa dalla nuova pasword");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                } else if (!Hash.checkPassword(request.getVecchiaPassword(), oldPassword)) {
+                    response.put("error", "La password corrente non è corretta");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 } else {
                     String hashPassword = Hash.hashPassword(password);
@@ -160,9 +172,15 @@ public class AuthController {
                     userService.changePassword(user.getUsername(), hashPassword);
                 }
             }
+            String newToken = jwtUtil.generateToken(id, user.getEmail(), user.getUsername(), user.getNome(), user.getCognome(), user.isAdmin());
+            TokenBlackList tokenBlackList = new TokenBlackList();
+            tokenBlackList.setAccessToken(token);
+            tokenBlackListService.saveAccessToken(tokenBlackList);
             response.put("message", "Dati aggiornati");
+            response.put("accessToken", newToken);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
             response.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
@@ -170,6 +188,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
         try {
             token = token.replace("Bearer ", "");
             if (!jwtUtil.isTokenValid(token)) {
@@ -189,6 +208,7 @@ public class AuthController {
 
     @GetMapping("/view-account")
     public ResponseEntity<?> viewAccount(@RequestHeader("Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
         try {
             token = token.replace("Bearer ", "");
             if(!jwtUtil.isTokenValid(token)) {
@@ -203,7 +223,7 @@ public class AuthController {
             }
             User user = userService.getUserData(idString);
             UserDTO userDTO = new UserDTO(user.getUserSpaces(), user.getUserPosts(), user.getNome(), user.getCognome(), user.getUsername(), user.getEmail());
-            return ResponseEntity.ok(Map.of("message", userDTO));
+            return ResponseEntity.ok(Map.of("user", userDTO));
         } catch (IllegalArgumentException e) {
             response.put("error", "L'utente non esiste");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
