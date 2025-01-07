@@ -5,6 +5,7 @@
   import 'vue3-toastify/dist/index.css';
   import Cookies from "js-cookie";
   import {isNotOrNull, isValidEmail, isValidPassword, isValidText, isValidUsername} from "@/constants/regexTest.js";
+  import router from "@/router/index.js";
 
   const loading = ref(true)
   const user = ref(null)
@@ -74,6 +75,21 @@
           }
         })
   }
+
+  const logout = () => {
+    apiUrlToken.post('/auth/logout')
+        .then((response) => {
+          Cookies.remove("accessToken")
+          router.push("/")
+        })
+        .catch((error) => {
+          console.error(error)
+          if (error.response.data.error) {
+            toast.error(error.response.data.error);
+          }
+        })
+  }
+
 </script>
 
 <template>
@@ -110,6 +126,10 @@
     <button @click="changeUserData">
       Salva
     </button>
+    <div>
+      <p>Effettua il </p>
+      <button @click="logout">Logout</button>
+    </div>
   </div>
 </template>
 

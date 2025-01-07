@@ -22,6 +22,9 @@
     if (route.query.page !== 'login' && route.query.page !== 'registration') {
       router.push('/')
     }
+    Object.keys(user.value).forEach(key => {
+      user.value[key] = '';
+    });
     current.value = (route.query.page || 'login').trim().toLowerCase();
   })
 
@@ -81,7 +84,9 @@
         })
         .catch((error) => {
           console.error(error)
-          toast.error("Registrazione non andata a buon fine");
+          if (error.response.data.error) {
+            toast.error(error.response.data.error);
+          }
         })
   }
 </script>
@@ -116,7 +121,3 @@
     <p v-else>Hai già un account? <RouterLink :to="{query: {page: 'login'}}">Login</RouterLink></p>
   </div>
 </template>
-
-<style scoped>
-
-</style>

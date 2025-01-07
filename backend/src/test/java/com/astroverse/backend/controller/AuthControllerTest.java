@@ -3,18 +3,17 @@ package com.astroverse.backend.controller;
 import com.astroverse.backend.component.ChangeUserRequest;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.component.Hash;
+import com.astroverse.backend.model.TokenBlackList;
 import com.astroverse.backend.model.User;
 import com.astroverse.backend.repository.UserRepository;
+import com.astroverse.backend.service.TokenBlackListService;
 import com.astroverse.backend.service.UserService;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,10 @@ public class AuthControllerTest {
     private AuthController authController;
     @Mock
     private JwtUtil jwtUtil;
+    @Mock
+    private TokenBlackList tokenBlackList;
+    @Mock
+    private TokenBlackListService tokenBlackListService;
 
     @Test
     public void testRegistration() {
