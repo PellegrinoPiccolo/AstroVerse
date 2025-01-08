@@ -66,7 +66,7 @@ public class SpaceController {
                     return ResponseEntity.status(400).body(response);
                 }
                 Path path = Paths.get(directory);
-                Path spacePath = Paths.get(directory + "/" + createdSpace.getId() + "/");
+                Path spacePath = Paths.get(directory + "\\" + createdSpace.getId() + "\\");
                 if(!Files.exists(path)) {
                     try {
                         Files.createDirectories(path);
@@ -176,7 +176,7 @@ public class SpaceController {
                 return ResponseEntity.status(400).body(response);
             }
             Path path = Paths.get(directory);
-            Path spacePath = Paths.get(directory + "/" + space.getId() + "/");
+            Path spacePath = Paths.get(directory + "" + space.getId() + "\\");
             if(!Files.exists(path)) {
                 try {
                     Files.createDirectories(path);
@@ -217,13 +217,11 @@ public class SpaceController {
 
     protected boolean checkImageFile(MultipartFile file) {
         String contentType = file.getContentType();
-        if (contentType != null) {
-            return contentType.equals("image/jpeg") || contentType.equals("image/png");
-        } else return false;
+        return contentType.equals("image/jpeg") || contentType.equals("image/png");
     }
 
     protected boolean saveImageFile(Space space, Path spacePath, MultipartFile file) {
-        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename().replaceAll("\\s+", "");
         Path filePath = spacePath.resolve(fileName);
         try {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
