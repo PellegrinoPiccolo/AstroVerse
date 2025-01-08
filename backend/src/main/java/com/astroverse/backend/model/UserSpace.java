@@ -1,6 +1,8 @@
 package com.astroverse.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,11 +23,11 @@ public class UserSpace {
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private User user;
     @ManyToOne
     @JoinColumn(name = "space_id", nullable = false)
-    @JsonIgnore
+    @JsonManagedReference
     private Space space;
     private boolean isSpaceAdmin;
     private LocalDateTime createdAt;
