@@ -141,13 +141,17 @@ public class SpaceController {
         }
         Space space = optional.get();
         UserSpace userSpace = new UserSpace(user, space);
-        if(!userSpaceService.existSubscribe(userSpace)) {
+        if (!userSpaceService.existSubscribe(userSpace)) {
             userSpaceService.saveUserSpace(userSpace);
-            response.put("message", "Iscrizione allo spazio avvenuta con successo");
+            response.put("message", "Iscrizione avvenuta con successo");
             return ResponseEntity.ok(response);
-        } else  {
-            response.put("error", "Iscrizione allo spazio già effettuata");
-            return ResponseEntity.status(400).body(response);
+        } else {
+            if (userSpaceService.deleteUserSpace(userSpace) == 0) {
+                response.put("error", "Errore nella disiscrizione");
+                return ResponseEntity.status(400).body(response);
+            }
+            response.put("message", "Disiscrizione avvenuta con successo");
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -189,7 +193,7 @@ public class SpaceController {
                 return ResponseEntity.status(400).body(response);
             }
             Path path = Paths.get(directory);
-            Path spacePath = Paths.get(directory + "" + space.getId() + "\\");
+            Path spacePath = Paths.get(directory + "\\" + space.getId() + "\\");
             if(!Files.exists(path)) {
                 try {
                     Files.createDirectories(path);

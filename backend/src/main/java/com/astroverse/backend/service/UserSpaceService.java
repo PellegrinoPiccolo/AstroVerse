@@ -34,4 +34,8 @@ public class UserSpaceService {
         userSpace.setSpaceAdmin(true);
         return userSpaceRepository.save(userSpace);
     }
+
+    public int deleteUserSpace(UserSpace userSpace) {
+        return userSpaceRepository.deleteByUser_IdAndSpace_Id(userSpace.getUser().getId(), userSpace.getSpace().getId());
+    }
 }

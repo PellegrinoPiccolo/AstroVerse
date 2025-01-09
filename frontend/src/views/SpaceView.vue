@@ -1,7 +1,7 @@
 <script setup>
   import {useRoute} from "vue-router";
   import {onMounted, ref} from "vue";
-  import {apiUrlToken} from "@/constants/ApiUrl.js";
+  import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
   import Cookies from "js-cookie";
@@ -16,17 +16,18 @@
   const loadingImage = ref(true)
   const loading = ref(true)
   const posts = ref(null)
+  const users = ref(null)
 
   onMounted(() => {
     const id = route.params.id
     apiUrlToken.get(`/space/view/${id}`)
         .then((response) => {
           space.value = response.data.message
-          const users = response.data.users
+          const userData = response.data.users
+          users.value = userData
           posts.value = response.data.posts
-          console.log(response)
           const actualUser = jwtDecode(token)
-          users.map((user) => {
+          userData.map((user) => {
             if (user.id === actualUser.id) {
               isSub.value = true
             }
@@ -34,7 +35,6 @@
           if (response.data.idAdmin === actualUser.id) {
             isAdmin.value = true
           }
-          console.log(response)
           loading.value = false
           const splits = space.value.image.split("\\")
           const imageName = splits[2]
@@ -49,17 +49,39 @@
                 if (error.response.data.error) {
                   toast.error(err.response.data.error)
                 }
-                console.log(error)
+                console.error(error)
                 loadingImage.value = false
               })
         })
         .catch((error) => {
-          if (error.response.data.error) {
+          if (error.response) {
             toast.error(err.response.data.error)
           }
-          console.log(error)
+          console.error(error)
         })
   })
+
+  const handleSubmit = () => {
+    const body = new FormData()
+    body.append("idSpazio", space.value.id)
+    apiTokenForm.post('/space/subscribe', body)
+        .then((response) => {
+          isSub.value = !isSub.value
+          toast.success(response.data.message)
+          const actualUser = jwtDecode(token);
+          if (isSub.value) {
+            users.value.push(actualUser)
+          } else {
+            users.value = users.value.filter(user => user.id !== actualUser.id)
+          }
+        })
+        .catch((error) => {
+          isSub.value = false
+          if(error.response) {
+            toast.error(error.response.data.error)
+          }
+        })
+  }
 </script>
 
 <template>
@@ -74,10 +96,11 @@
       <VaProgressCircle indeterminate color="#262626"/>
     </div>
     <div v-else>
-      <button v-if="isSub && !isAdmin">
+      <p>Numero di utenti: {{users.length}}</p>
+      <button v-if="isSub && !isAdmin" @click="handleSubmit">
         Disiscriviti
       </button>
-      <button v-else-if="!isSub && !isAdmin">
+      <button v-else-if="!isSub && !isAdmin" @click="handleSubmit">
         Iscriviti
       </button>
       <h1>{{space.title}}</h1>
