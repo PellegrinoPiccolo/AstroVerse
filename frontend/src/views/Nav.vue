@@ -21,61 +21,67 @@
 </style>
 
 <template>
-  <nav>
-    <div class="logo-container">
+  <div class="container">
+    <div class="page-container">
+      <nav>
+        <div class="logo-container">
+          <RouterLink to="/astroverse">
+            <img class="logo" :src="logo" alt="AstroVerse logo"/>
+          </RouterLink>
+        </div>
+        <ul class="link-container">
+          <li>
+            <RouterLink to="/astroverse">
+              <FontAwesomeIcon :icon="faHouse" />
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/astroverse">
+              <FontAwesomeIcon :icon="faUsers" />
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/astroverse">
+              <FontAwesomeIcon :icon="faPenToSquare" />
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/astroverse/user">
+              <FontAwesomeIcon :icon="faUser" />
+            </RouterLink>
+          </li>
+          <li class="search-container">
+            <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon"/>
+            <input type="text" placeholder="Cerca su AstroVerse" >
+          </li>
+        </ul>
+      </nav>
+      <div class="main">
+        <RouterView />
+      </div>
+    </div>
+    <footer>
       <RouterLink to="/astroverse">
-        <img class="logo" :src="logo" alt="AstroVerse logo"/>
+        <img class="footer-logo" :src="logo" alt="AstroVerse logo"/>
       </RouterLink>
-    </div>
-    <ul class="link-container">
-      <li>
-        <RouterLink to="/astroverse">
-          <FontAwesomeIcon :icon="faHouse" />
-        </RouterLink>
-      </li>
-      <li>
-        <RouterLink to="/astroverse">
-          <FontAwesomeIcon :icon="faUsers" />
-        </RouterLink>
-      </li>
-      <li>
-        <RouterLink to="/astroverse">
-          <FontAwesomeIcon :icon="faPenToSquare" />
-        </RouterLink>
-      </li>
-      <li>
-        <RouterLink to="/astroverse/user">
-          <FontAwesomeIcon :icon="faUser" />
-        </RouterLink>
-      </li>
-      <li class="search-container">
-        <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon"/>
-        <input type="text" placeholder="Cerca su AstroVerse" >
-      </li>
-    </ul>
-  </nav>
-  <RouterView />
-  <footer>
-    <RouterLink to="/astroverse">
-      <img class="footer-logo" :src="logo" alt="AstroVerse logo"/>
-    </RouterLink>
-    <div class="section-container">
-      <div class="section">
-        <h2>Contatti</h2>
-        <ul>
-          <li><a href="mailto:p.piccolo4@studenti.unisa.it"> p.piccolo4@studenti.unisa.it</a></li>
-          <li><a href="mailto:a.devita40@studenti.unisa.it"> a.devita40@studenti.unisa.it</a></li>
-          <li><a href="mailto:c.fontana7@studenti.unisa.it">c.fontana7@studenti.unisa.it</a></li>
-          <li><a href="mailto:c.bianco9@studenti.unisa.it">c.bianco9@studenti.unisa.it</a></li>
-        </ul>
+      <div class="section-container">
+        <div class="section">
+          <h2>Contatti</h2>
+          <ul>
+            <li><a href="mailto:p.piccolo4@studenti.unisa.it"> p.piccolo4@studenti.unisa.it</a></li>
+            <li><a href="mailto:a.devita40@studenti.unisa.it"> a.devita40@studenti.unisa.it</a></li>
+            <li><a href="mailto:c.fontana7@studenti.unisa.it">c.fontana7@studenti.unisa.it</a></li>
+            <li><a href="mailto:c.bianco9@studenti.unisa.it">c.bianco9@studenti.unisa.it</a></li>
+          </ul>
+        </div>
+        <div class="section">
+          <h2>GitHub</h2>
+          <ul>
+            <li><a href="https://github.com/PellegrinoPiccolo/AstroVerse" target="__blank">AstroVerse</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="section">
-        <h2>GitHub</h2>
-        <ul>
-          <li><a href="https://github.com/PellegrinoPiccolo/AstroVerse" target="__blank">AstroVerse</a></li>
-        </ul>
-      </div>
-    </div>
-    <p class="trademark">AstroVerse 2025© All Rights Reserved</p>
-  </footer>
+      <p class="trademark">AstroVerse 2025© All Rights Reserved</p>
+    </footer>
+  </div>
 </template>

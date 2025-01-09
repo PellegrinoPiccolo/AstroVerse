@@ -53,9 +53,11 @@ import ServerUrl from "@/constants/ServerUrl.js";
       <div v-if="loading">
         <VaProgressCircle indeterminate color="#262626"/>
       </div>
-      <button v-if="!loading">
-        Crea Spazio
-      </button>
+      <RouterLink v-if="!loading" to="astroverse/create/space">
+        <button>
+          Crea Spazio
+        </button>
+      </RouterLink>
       <div v-for="space in orderedSpaces" :key="space.id">
         <img :src="images[space.space.id]" :alt="space.space.title">
         <p>
