@@ -180,7 +180,6 @@ public class AuthController {
             response.put("accessToken", newToken);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
             response.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }

@@ -75,7 +75,6 @@ public class PostController {
             }
             post.setFile(filePath.toString());
             int v = postService.saveImage(createdPost.getId(), post.getFile());
-            System.out.println(createdPost.getId() + " ID DEL NUOVO POST" + v);
             if (v == 0) {
                 response.put("error", "Errore nel salvataggio dell'immagine");
                 return ResponseEntity.status(500).body(response);
