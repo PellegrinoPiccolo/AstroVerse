@@ -39,7 +39,7 @@
     await apiTokenForm.post('/auth/login', body)
         .then(async (response) => {
           const token = await response.data.accessToken
-          await Cookies.set("accessToken", token)
+          await Cookies.set("accessToken", token, {expires: 30})
           if(Cookies.get("accessToken")) {
             await router.push("/astroverse")
           }
@@ -79,7 +79,7 @@
     await apiTokenForm.post('/auth/registration', body)
         .then(async (response) => {
           const token = await response.data.accessToken
-          await Cookies.set('accessToken', token)
+          await Cookies.set('accessToken', token, {expires: 30})
           await router.push("/astroverse")
         })
         .catch((error) => {

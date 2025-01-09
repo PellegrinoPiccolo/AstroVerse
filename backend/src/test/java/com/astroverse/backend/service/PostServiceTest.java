@@ -44,7 +44,7 @@ public class PostServiceTest {
         when(spaceRepository.save(space)).thenReturn(space);
         space = spaceService.saveSpace(space);
 
-        post = new Post("Problema di Matematica: definisci il dominio di una funzione", space.getId(), user.getId());
+        post = new Post("Problema di Matematica: definisci il dominio di una funzione", space.getId(), user);
         when(postRepository.save(post)).thenReturn(post);
 
         Post savedPost = postService.savePost(post);
@@ -66,7 +66,7 @@ public class PostServiceTest {
         when(spaceRepository.save(space)).thenReturn(space);
         space = spaceService.saveSpace(space);
 
-        post = new Post("Problema di Matematica: definisci il dominio di una funzione", space.getId(), user.getId());
+        post = new Post("Problema di Matematica: definisci il dominio di una funzione", space.getId(), user);
         when(postRepository.save(post)).thenReturn(post);
         post = postService.savePost(post);
 

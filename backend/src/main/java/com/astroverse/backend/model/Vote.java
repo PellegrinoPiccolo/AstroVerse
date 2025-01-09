@@ -1,5 +1,6 @@
 package com.astroverse.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class Vote {
     private long id;
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
+    @JsonBackReference
     private Post post;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

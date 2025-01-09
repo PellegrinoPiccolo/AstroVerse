@@ -40,7 +40,7 @@ public class PostControllerTest {
         when(userRepository.save(user)).thenReturn(user);
         user = userRepository.save(user);
 
-        Post post = new Post("ProvaTesto", space.getId(), user.getId());
+        Post post = new Post("ProvaTesto", space.getId(), user);
 
         when(postService.savePost(any(Post.class))).thenReturn(post);
         ResponseEntity<?> response = postController.createPost(post.getTesto(), null, exampleToken, space.getId());
@@ -59,7 +59,7 @@ public class PostControllerTest {
         when(userRepository.save(user)).thenReturn(user);
         user = userRepository.save(user);
 
-        Post post = new Post("ProvaTesto", space.getId(), user.getId());
+        Post post = new Post("ProvaTesto", space.getId(), user);
 
         when(postService.savePost(any(Post.class))).thenReturn(post);
         ResponseEntity<?> response = postController.createPost(post.getTesto(), null, exampleToken, space.getId());

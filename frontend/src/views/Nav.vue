@@ -77,7 +77,11 @@
         <div class="section">
           <h2>GitHub</h2>
           <ul>
-            <li><a href="https://github.com/PellegrinoPiccolo/AstroVerse" target="__blank">AstroVerse</a></li>
+            <li><a href="https://github.com/PellegrinoPiccolo/AstroVerse" target="_blank">AstroVerse</a></li>
+          </ul>
+          <h2>Sede</h2>
+          <ul>
+            <li><a href="https://maps.app.goo.gl/JXCRRe5Tcgj3B7Fh6" target="_blank">Via delle Stelle, 84084 Fisciano (SA)</a></li>
           </ul>
         </div>
       </div>

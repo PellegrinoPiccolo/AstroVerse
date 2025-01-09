@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import {apiUrlToken} from "@/constants/ApiUrl.js";
 import UserView from "@/views/UserView.vue";
 import CreateSpaceView from "@/views/CreateSpaceView.vue";
+import SpaceView from "@/views/SpaceView.vue";
 
 const checkUser = async () => {
   const accessToken = Cookies.get('accessToken') || '';
@@ -49,7 +50,12 @@ const router = createRouter({
           path: 'create/space',
           name: 'CreateSpaceView',
           component: CreateSpaceView
-        }
+        },
+        {
+          path: 'space/:id',
+          name: 'SpaceView',
+          component: SpaceView
+        },
       ]
     },
   ],
