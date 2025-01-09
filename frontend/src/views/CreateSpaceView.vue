@@ -50,7 +50,6 @@ const space = ref({
     body.append("argomento", space.value.argument)
     body.append("descrizione", space.value.description)
     if (image.value !== null) {
-      console.log('ENTRO')
       body.append("file", image.value)
     }
     apiTokenForm.post('/space/create', body)
@@ -61,7 +60,7 @@ const space = ref({
           if(error.response.data.error) {
             toast.error(error.response.data.error)
           }
-          console.log(error)
+          console.error(error)
         })
   }
 </script>

@@ -13,7 +13,6 @@ import {toast} from "vue3-toastify";
     await apiUrlToken.get('/auth/view-account')
         .then((response) => {
           user.value = response.data.user
-          console.log(response)
           spaces.value = response.data.spaces
           spaces.value.map(async (space) => {
               const parts = space.image.split("\\")

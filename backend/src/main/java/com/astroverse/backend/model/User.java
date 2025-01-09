@@ -35,6 +35,7 @@ public class User {
     private String username;
     @Column(unique = true, nullable = false)
     private String email;
+    @JsonIgnore
     private String password;
     private LocalDateTime createdAt;
     @PrePersist
