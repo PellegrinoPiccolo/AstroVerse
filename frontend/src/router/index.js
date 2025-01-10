@@ -8,6 +8,7 @@ import UserView from "@/views/UserView.vue";
 import CreateSpaceView from "@/views/CreateSpaceView.vue";
 import SpaceView from "@/views/SpaceView.vue";
 import UsersSpaceView from "@/views/UsersSpaceView.vue";
+import SpaceModifyView from "@/views/SpaceModifyView.vue";
 
 const checkUser = async () => {
   const accessToken = Cookies.get('accessToken') || '';
@@ -61,19 +62,29 @@ const router = createRouter({
           path: 'space/:id/users',
           name: 'UsersSpaceView',
           component: UsersSpaceView
+        },
+        {
+          path: 'space/modify/:id',
+          name: 'SpaceModifyView',
+          component: SpaceModifyView
         }
       ]
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
+  },
 })
 
 router.beforeEach(async (to, from, next) => {
   const isValid = await checkUser()
   if (to.name === 'AuthView' && isValid) {
-    history.pushState({}, null, '/astroverse')
-    next({name: 'home'})
+    next({name: 'HomeView'})
   } else if (to.name !== 'AuthView' && !isValid) {
-    history.pushState({}, null, '/')
     next({name: 'AuthView'});
   } else {
     next();

@@ -27,7 +27,7 @@ public class SpaceController {
     private final SpaceService spaceService;
     private static final String titoloRegex = "^[A-Za-zÀ-ù0-9,‘\\-\\s]{2,50}$";
     private static final String argomentoRegex = "^[A-Za-zÀ-ÿ\\s]{2,30}$";
-    private static final String descrizioneRegex = "^[\\w\\s\\p{Punct}]{1,200}$";
+    private static final String descrizioneRegex = "^[\\w\\s\\p{P}àèéìòùÀÈÉÌÒÙ]{1,200}$";
     private static final String directory = "uploads/";
     private final UserService userService;
     private final UserSpaceService userSpaceService;
