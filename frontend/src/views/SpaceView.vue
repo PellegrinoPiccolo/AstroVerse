@@ -1,5 +1,5 @@
 <script setup>
-  import {useRoute} from "vue-router";
+  import {useRoute, useRouter} from "vue-router";
   import {ref, watchEffect} from "vue";
   import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
@@ -17,6 +17,7 @@
   const loading = ref(true)
   const posts = ref(null)
   const users = ref(null)
+  const router = useRouter()
 
   watchEffect(() => {
     const id = route.params.id
@@ -96,6 +97,9 @@
       <VaProgressCircle indeterminate color="#262626"/>
     </div>
     <div v-else>
+      <button v-if="isAdmin" @click="router.push(`/astroverse/space/modify/${space.id}`)">
+        Modifica spazio
+      </button>
       <RouterLink :to="`${space.id}/users`">Numero di utenti: {{users.length}}</RouterLink>
       <button v-if="isSub && !isAdmin" @click="handleSubmit">
         Disiscriviti
@@ -112,7 +116,6 @@
       <div v-if="posts.length > 0">
         <h2>Post</h2>
         <div v-for="post in posts" :key="post.id">
-          <!--Inserire immagine del post-->
           <p>{{post.testo}}</p>
           <p>{{post.userData.username}}</p>
         </div>

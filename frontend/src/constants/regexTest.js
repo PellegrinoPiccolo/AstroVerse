@@ -2,7 +2,7 @@ const textRegex = /^[A-Za-zÀ-ÿ\s]{2,30}$/
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/
 const usernameRegex = /^[A-Za-z0-9._\-\s]{3,20}$/
-const descriptionRegex = /^[\w\s!-/:-@[-`{-~]{1,200}$/
+const descriptionRegex = /^[\w\s\p{P}àèéìòùÀÈÉÌÒÙ]{1,200}$/u;
 const titleRegex = /^[A-Za-zÀ-ù0-9,‘\-\s]{2,50}$/
 
 export const isNotOrNull = (value) => value === '' || value === null
