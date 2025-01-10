@@ -180,7 +180,6 @@ public class AuthController {
             response.put("accessToken", newToken);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
             response.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
@@ -208,7 +207,7 @@ public class AuthController {
 
     @GetMapping("/view-account")
     public ResponseEntity<?> viewAccount(@RequestHeader("Authorization") String token) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         try {
             token = token.replace("Bearer ", "");
             if(!jwtUtil.isTokenValid(token)) {
@@ -222,8 +221,10 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             User user = userService.getUserData(idString);
-            UserDTO userDTO = new UserDTO(user.getUserSpaces(), user.getUserPosts(), user.getNome(), user.getCognome(), user.getUsername(), user.getEmail());
-            return ResponseEntity.ok(Map.of("user", userDTO));
+            UserDTO userDTO = new UserDTO(user.getUserSpaces(), user.getPosts(), user.getNome(), user.getCognome(), user.getUsername(), user.getEmail());
+            response.put("user", userDTO);
+            response.put("spaces", userService.getSpaceByUser(user));
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             response.put("error", "L'utente non esiste");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);

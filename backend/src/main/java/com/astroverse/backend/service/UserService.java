@@ -1,14 +1,21 @@
 package com.astroverse.backend.service;
 
 import com.astroverse.backend.model.User;
+import com.astroverse.backend.model.Space;
+import com.astroverse.backend.model.UserSpace;
 import com.astroverse.backend.repository.UserRepository;
+import com.astroverse.backend.repository.UserSpaceRepository;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserSpaceRepository userSpaceRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserSpaceRepository userSpaceRepository) {
+        this.userSpaceRepository = userSpaceRepository;
         this.userRepository = userRepository;
     }
 
@@ -68,5 +75,14 @@ public class UserService {
             throw new IllegalArgumentException("Utente non esistente");
         }
         return userRepository.findPasswordById(id);
+    }
+
+    public List<Space> getSpaceByUser(User user) {
+        List<UserSpace> userSpaces = userSpaceRepository.findByUser(user);
+        List<Space> spaces = new ArrayList<>();
+        for (UserSpace userSpace : userSpaces) {
+            spaces.add(userSpace.getSpace());
+        }
+        return spaces;
     }
 }

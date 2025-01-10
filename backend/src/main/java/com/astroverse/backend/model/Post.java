@@ -1,10 +1,13 @@
 package com.astroverse.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,13 +23,30 @@ public class Post {
     private String testo;
     private String file;
     private long spaceId;
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User user;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private Set<UserPost> userPosts = new HashSet<>();
+    @JsonManagedReference
+    private Set<Vote> votes = new HashSet<>();
+    private LocalDateTime createdAt;
+    @Transient
+    private User userData;
 
-    public Post(String testo, long spaceId, long userId) {
+    public Post(String testo, long id, User user) {
+        this.id = id;
+        this.testo = testo;
+        this.user = user;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    public Post(String testo, long spaceId) {
         this.testo = testo;
         this.spaceId = spaceId;
-        this.userId = userId;
     }
 }

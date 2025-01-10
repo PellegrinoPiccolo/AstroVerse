@@ -1,6 +1,6 @@
 package com.astroverse.backend.component;
 
-import com.astroverse.backend.model.UserPost;
+import com.astroverse.backend.model.Post;
 import com.astroverse.backend.model.UserSpace;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Component
 public class UserDTO {
     private Set<UserSpace> userSpaces = new HashSet<>();
-    private Set<UserPost> userPosts = new HashSet<>();
+    private Set<Post> userPosts = new HashSet<>();
     private String nome;
     private String cognome;
     private String username;

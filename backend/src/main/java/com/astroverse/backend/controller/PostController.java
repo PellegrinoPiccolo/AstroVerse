@@ -2,6 +2,7 @@ package com.astroverse.backend.controller;
 
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.model.Post;
+import com.astroverse.backend.model.User;
 import com.astroverse.backend.service.PostService;
 import com.astroverse.backend.service.VotePostFacade;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -41,7 +42,8 @@ public class PostController {
             return ResponseEntity.status(400).body(response);
         }
         DecodedJWT decoded = JwtUtil.JwtDecode(token);
-        Post post = new Post(testo, id, decoded.getClaim("id").asLong());
+        User user = new User(decoded.getClaim("id").asLong());
+        Post post = new Post(testo, id, user);
         Post createdPost = postService.savePost(post);
         if (file != null && !file.isEmpty()) {
             if(!checkImageFile(file)) {
@@ -73,7 +75,6 @@ public class PostController {
             }
             post.setFile(filePath.toString());
             int v = postService.saveImage(createdPost.getId(), post.getFile());
-            System.out.println(createdPost.getId() + " ID DEL NUOVO POST" + v);
             if (v == 0) {
                 response.put("error", "Errore nel salvataggio dell'immagine");
                 return ResponseEntity.status(500).body(response);

@@ -1,6 +1,7 @@
 package com.astroverse.backend.controller;
 
 import com.astroverse.backend.component.JwtUtil;
+import com.astroverse.backend.model.Post;
 import com.astroverse.backend.model.Space;
 import com.astroverse.backend.model.User;
 import com.astroverse.backend.model.UserSpace;
@@ -16,10 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
@@ -100,10 +98,25 @@ public class SpaceController {
 
     @GetMapping("/view/{id}")
     public ResponseEntity<?> viewSpace(@PathVariable Long id) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         Optional<Space> optional = spaceService.getSpace(id);
         if (optional.isPresent()) {
-            return ResponseEntity.ok(Map.of("message", optional.get()));
+            Space space = optional.get();
+            List<User> users = spaceService.getUsersBySpace(space);
+            response.put("message", space);
+            response.put("users", users);
+            response.put("idAdmin", spaceService.getAdmin(space));
+            List<Post> posts = spaceService.getPost(space);
+            for (Post post : posts) {
+                post.setUserData(new User(post.getUser().getId(),
+                            post.getUser().getNome(),
+                            post.getUser().getCognome(),
+                            post.getUser().getUsername(),
+                            post.getUser().getEmail())
+                );
+            }
+            response.put("posts", spaceService.getPost(space));
+            return ResponseEntity.ok(response);
         } else {
             response.put("error", "Questo spazio non esiste");
             return ResponseEntity.status(400).body(response);
@@ -128,13 +141,17 @@ public class SpaceController {
         }
         Space space = optional.get();
         UserSpace userSpace = new UserSpace(user, space);
-        if(!userSpaceService.existSubscribe(userSpace)) {
+        if (!userSpaceService.existSubscribe(userSpace)) {
             userSpaceService.saveUserSpace(userSpace);
-            response.put("message", "Iscrizione allo spazio avvenuta con successo");
+            response.put("message", "Iscrizione avvenuta con successo");
             return ResponseEntity.ok(response);
-        } else  {
-            response.put("error", "Iscrizione allo spazio già effettuata");
-            return ResponseEntity.status(400).body(response);
+        } else {
+            if (userSpaceService.deleteUserSpace(userSpace) == 0) {
+                response.put("error", "Errore nella disiscrizione");
+                return ResponseEntity.status(400).body(response);
+            }
+            response.put("message", "Disiscrizione avvenuta con successo");
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -176,7 +193,7 @@ public class SpaceController {
                 return ResponseEntity.status(400).body(response);
             }
             Path path = Paths.get(directory);
-            Path spacePath = Paths.get(directory + "" + space.getId() + "\\");
+            Path spacePath = Paths.get(directory + "\\" + space.getId() + "\\");
             if(!Files.exists(path)) {
                 try {
                     Files.createDirectories(path);

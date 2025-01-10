@@ -19,6 +19,7 @@
     await apiUrlToken.get('/auth/view-account')
         .then((response) => {
             user.value = response.data.user
+          console.log(response.data.user)
         })
         .catch((error) => {
           console.error(error.response)
@@ -60,13 +61,12 @@
       "confermaPassword": passwords.value.confirmNewPassword,
       "vecchiaPassword": passwords.value.oldPassword
     })
-    console.log(body)
     apiTokenJson.post('/auth/change-user-data', body)
         .then((response) => {
           const token = response.data.accessToken
           const message = response.data.message
           toast.success(message)
-          Cookies.set("accessToken", token)
+          Cookies.set("accessToken", token, {expires: 30})
         })
         .catch((error) => {
           console.error(error)
@@ -104,6 +104,8 @@
     <input type="text" id="cognome" placeholder="Il tuo cognome" v-model="user.cognome">
     <label for="email">Email</label>
     <input type="email" id="email" placeholder="La tua email" v-model="user.email">
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Il tuo username" v-model="user.username">
     <div>
       <div>
         <p>Numero di spazi a cui partecipi</p>
