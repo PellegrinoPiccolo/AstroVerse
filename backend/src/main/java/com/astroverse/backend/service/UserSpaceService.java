@@ -4,7 +4,12 @@ import com.astroverse.backend.model.Space;
 import com.astroverse.backend.model.User;
 import com.astroverse.backend.model.UserSpace;
 import com.astroverse.backend.repository.UserSpaceRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserSpaceService {
@@ -37,5 +42,14 @@ public class UserSpaceService {
 
     public int deleteUserSpace(UserSpace userSpace) {
         return userSpaceRepository.deleteByUser_IdAndSpace_Id(userSpace.getUser().getId(), userSpace.getSpace().getId());
+    }
+
+    public long getNumberOfUsers(Space space) {
+        return userSpaceRepository.countBySpace(space);
+    }
+
+    public Page<UserSpace> getAllUserBySpace(Space space, int limit, int offset) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        return userSpaceRepository.findAllBySpace(space, pageable);
     }
 }
