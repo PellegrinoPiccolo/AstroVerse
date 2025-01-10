@@ -1,6 +1,6 @@
 <script setup>
   import {useRoute} from "vue-router";
-  import {onMounted, ref} from "vue";
+  import {ref, watchEffect} from "vue";
   import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
@@ -18,7 +18,7 @@
   const posts = ref(null)
   const users = ref(null)
 
-  onMounted(() => {
+  watchEffect(() => {
     const id = route.params.id
     apiUrlToken.get(`/space/view/${id}`)
         .then((response) => {

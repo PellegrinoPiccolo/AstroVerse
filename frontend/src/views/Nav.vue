@@ -3,6 +3,48 @@
   import {faHouse, faMagnifyingGlass, faPenToSquare, faUser, faUsers} from "@fortawesome/free-solid-svg-icons";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import "@/assets/styles/Nav.css";
+  import {ref, watchEffect} from "vue";
+  import {apiUrlToken} from "@/constants/ApiUrl.js";
+  import {toast} from "vue3-toastify";
+  import {useRouter} from "vue-router";
+
+  const router = useRouter()
+  const spaces = ref(null)
+  const loading = ref(false)
+  const inputValue = ref('')
+  const currentYear = ref(new Date().getFullYear())
+  const focus = ref(false)
+
+  watchEffect(() => {
+    loading.value = true
+    if (inputValue.value === '') {
+      spaces.value = {}
+    } else {
+      apiUrlToken.get(`/space/search/${inputValue.value}`)
+          .then((response) => {
+            spaces.value = response.data.message
+          })
+          .catch((error) => {
+            console.error("Spazi non trovati: " + this.error)
+            toast.error("Nessuno spazio trovato con questa ricerca")
+          })
+    }
+    loading.value = false
+  })
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      focus.value = false
+      inputValue.value = ''
+      spaces.value = null
+    }, 300)
+    console.log('blur')
+  }
+
+  const handleFocus = () => {
+    focus.value = true
+  }
+
 </script>
 
 <style>
@@ -11,7 +53,6 @@
     src: local("Merienda"),
     url(@/assets/fonts/Roboto-Regular.ttf) format("truetype");
   }
-
   @font-face {
     font-family: "Merienda";
     src: local("Merienda Bold"),
@@ -50,9 +91,24 @@
               <FontAwesomeIcon :icon="faUser" />
             </RouterLink>
           </li>
-          <li class="search-container">
+          <li class="search-container" style="position: relative">
             <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon"/>
-            <input type="text" placeholder="Cerca su AstroVerse" >
+            <input type="text" placeholder="Cerca su AstroVerse" v-model="inputValue" @blur="handleBlur" @focus="handleFocus">
+            <div v-if="focus" style="position: absolute; top: 2em; background-color: #181818">
+              <div v-if="loading">
+                <VaProgressCircle indeterminate color="#fff"/>
+              </div>
+              <div v-else>
+                <div v-for="space in spaces" v-if="spaces && spaces.length > 0" :key="space.id">
+                  <RouterLink :to="`/astroverse/space/${space.id}`">
+                    {{space.title}}
+                  </RouterLink>
+                </div>
+                <div v-else>
+                  <p>Non ci sono spazi con la ricerca: "{{inputValue}}"</p>
+                </div>
+              </div>
+            </div>
           </li>
         </ul>
       </nav>
@@ -85,7 +141,7 @@
           </ul>
         </div>
       </div>
-      <p class="trademark">AstroVerse 2025© All Rights Reserved</p>
+      <p class="trademark">AstroVerse {{ currentYear }}© All Rights Reserved</p>
     </footer>
   </div>
 </template>
