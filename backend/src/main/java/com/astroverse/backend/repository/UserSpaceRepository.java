@@ -4,6 +4,8 @@ import com.astroverse.backend.model.Space;
 import com.astroverse.backend.model.User;
 import com.astroverse.backend.model.UserSpace;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 
@@ -22,4 +24,8 @@ public interface UserSpaceRepository extends JpaRepository<UserSpace, Long> {
     @Transactional
     @Modifying
     int deleteByUser_IdAndSpace_Id(long userId, long spaceId);
+
+    long countBySpace(Space space);
+
+    Page<UserSpace> findAllBySpace(Space space, Pageable pageable);
 }

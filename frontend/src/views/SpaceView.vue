@@ -96,7 +96,7 @@
       <VaProgressCircle indeterminate color="#262626"/>
     </div>
     <div v-else>
-      <p>Numero di utenti: {{users.length}}</p>
+      <RouterLink :to="`${space.id}/users`">Numero di utenti: {{users.length}}</RouterLink>
       <button v-if="isSub && !isAdmin" @click="handleSubmit">
         Disiscriviti
       </button>

@@ -9,6 +9,7 @@ import com.astroverse.backend.service.SpaceService;
 import com.astroverse.backend.service.UserService;
 import com.astroverse.backend.service.UserSpaceService;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,20 +60,20 @@ public class SpaceController {
         Space createdSpace = spaceService.saveSpace(space);
         if (createdSpace != null) {
             if (file != null && !file.isEmpty()) {
-                if(!checkImageFile(file)) {
+                if (!checkImageFile(file)) {
                     response.put("error", "Formato immagine non valido");
                     return ResponseEntity.status(400).body(response);
                 }
                 Path path = Paths.get(directory);
                 Path spacePath = Paths.get(directory + "\\" + createdSpace.getId() + "\\");
-                if(!Files.exists(path)) {
+                if (!Files.exists(path)) {
                     try {
                         Files.createDirectories(path);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
-                if(!Files.exists(spacePath)) {
+                if (!Files.exists(spacePath)) {
                     try {
                         Files.createDirectories(spacePath);
                     } catch (IOException e) {
@@ -109,10 +110,10 @@ public class SpaceController {
             List<Post> posts = spaceService.getPost(space);
             for (Post post : posts) {
                 post.setUserData(new User(post.getUser().getId(),
-                            post.getUser().getNome(),
-                            post.getUser().getCognome(),
-                            post.getUser().getUsername(),
-                            post.getUser().getEmail())
+                        post.getUser().getNome(),
+                        post.getUser().getCognome(),
+                        post.getUser().getUsername(),
+                        post.getUser().getEmail())
                 );
             }
             response.put("posts", spaceService.getPost(space));
@@ -173,7 +174,7 @@ public class SpaceController {
             response.put("error", "L'utente non è iscritto allo spazio");
             return ResponseEntity.status(400).body(response);
         }
-        if(!userSpaceService.isUserAdmin(userSpace)) {
+        if (!userSpaceService.isUserAdmin(userSpace)) {
             response.put("error", "L'utente non è admin");
             return ResponseEntity.status(400).body(response);
         }
@@ -188,13 +189,13 @@ public class SpaceController {
             return ResponseEntity.status(400).body(response);
         }
         if (file != null && !file.isEmpty()) {
-            if(!checkImageFile(file)) {
+            if (!checkImageFile(file)) {
                 response.put("error", "Errore nel formato dell'immagine");
                 return ResponseEntity.status(400).body(response);
             }
             Path path = Paths.get(directory);
             Path spacePath = Paths.get(directory + "\\" + space.getId() + "\\");
-            if(!Files.exists(path)) {
+            if (!Files.exists(path)) {
                 try {
                     Files.createDirectories(path);
                 } catch (IOException e) {
@@ -203,7 +204,7 @@ public class SpaceController {
             }
             Path oldFilePath = Paths.get(space.getImage());
             try {
-                if(Files.exists(oldFilePath)) {
+                if (Files.exists(oldFilePath)) {
                     Files.delete(oldFilePath);
                 }
             } catch (IOException e) {
@@ -230,6 +231,26 @@ public class SpaceController {
     @GetMapping("/search/{param}")
     public ResponseEntity<?> searchSpace(@PathVariable String param) {
         return ResponseEntity.ok(Map.of("message", spaceService.searchSpace(param)));
+    }
+
+    @GetMapping("/get-all-users/{id}/{page}")
+    public ResponseEntity<?> getAllUsers(@PathVariable long id, @PathVariable int page) {
+        Map<String, Object> response = new HashMap<>();
+        int limit = 30;
+        int offset = (page-1)*limit;
+        Optional<Space> space = spaceService.getSpace(id);
+        if (space.isPresent()) {
+            double totalNumberOfUsers = userSpaceService.getNumberOfUsers(space.get());
+            int numberOfPages = (int) Math.ceil(totalNumberOfUsers/limit);
+            Page<UserSpace> users = userSpaceService.getAllUserBySpace(space.get(), limit, offset);
+            List<String> usersUsername = users.getContent().stream().map(user -> user.getUser().getUsername()).toList();
+            response.put("users", usersUsername);
+            response.put("numberOfPages", numberOfPages);
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "Spazio non esistente");
+            return ResponseEntity.status(400).body(response);
+        }
     }
 
     protected boolean checkImageFile(MultipartFile file) {
