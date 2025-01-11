@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
+import router from './index.js'
 import Vue3Toastify from 'vue3-toastify';
 import { createVuestic } from "vuestic-ui";
 

@@ -5,7 +5,7 @@
   import 'vue3-toastify/dist/index.css';
   import Cookies from "js-cookie";
   import {isNotOrNull, isValidEmail, isValidPassword, isValidText, isValidUsername} from "@/constants/regexTest.js";
-  import router from "@/router/index.js";
+  import router from "@/index.js";
 
   const loading = ref(true)
   const user = ref(null)

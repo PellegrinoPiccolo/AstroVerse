@@ -1,5 +1,6 @@
 package com.astroverse.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,7 +20,6 @@ import java.util.Set;
 @Table(name = "user")
 @ToString
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -38,6 +39,9 @@ public class User {
     @JsonIgnore
     private String password;
     private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Vote> vote;
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

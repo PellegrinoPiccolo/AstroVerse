@@ -38,7 +38,8 @@ public class VotePostFacade {
             }
         }
         Vote newVote = new Vote(post, user, vote);
-        voteService.saveVote(newVote);
+        Vote savedVote = voteService.saveVote(newVote);
+        System.out.println(savedVote.getId());
         return "Votazione al post effettuata con successo";
     }
 }

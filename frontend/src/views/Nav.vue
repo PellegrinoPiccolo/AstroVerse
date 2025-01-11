@@ -1,6 +1,6 @@
 <script setup>
   import logo from '@/assets/logo.png';
-  import {faHouse, faMagnifyingGlass, faPenToSquare, faUser, faUsers} from "@fortawesome/free-solid-svg-icons";
+  import {faHouse, faMagnifyingGlass, faUser, faUsers} from "@fortawesome/free-solid-svg-icons";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import "@/assets/styles/Nav.css";
   import {ref, watchEffect} from "vue";
@@ -25,7 +25,7 @@
             spaces.value = response.data.message
           })
           .catch((error) => {
-            console.error("Spazi non trovati: " + this.error)
+            console.error("Spazi non trovati: " + error)
             toast.error("Nessuno spazio trovato con questa ricerca")
           })
     }
@@ -38,13 +38,11 @@
       inputValue.value = ''
       spaces.value = null
     }, 300)
-    console.log('blur')
   }
 
   const handleFocus = () => {
     focus.value = true
   }
-
 </script>
 
 <style>
@@ -79,11 +77,6 @@
           <li>
             <RouterLink to="/astroverse">
               <FontAwesomeIcon :icon="faUsers" />
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/astroverse">
-              <FontAwesomeIcon :icon="faPenToSquare" />
             </RouterLink>
           </li>
           <li>

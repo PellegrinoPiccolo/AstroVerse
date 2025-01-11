@@ -34,8 +34,8 @@ public class Post {
     @Transient
     private User userData;
 
-    public Post(String testo, long id, User user) {
-        this.id = id;
+    public Post(String testo, long spaceId, User user) {
+        this.spaceId = spaceId;
         this.testo = testo;
         this.user = user;
     }
