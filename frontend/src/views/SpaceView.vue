@@ -6,6 +6,7 @@
   import 'vue3-toastify/dist/index.css';
   import Cookies from "js-cookie";
   import {jwtDecode} from "jwt-decode";
+  import Post from "@/components/Post.vue";
 
   const route = useRoute()
   const space = ref(null)
@@ -76,7 +77,6 @@
                 if (!postImages.value[p.id]) {
                   postImages.value[p.id] = ref(URL.createObjectURL(await response.data));
                 }
-                console.log(p.id, postImages.value[p.id])
               })
               .catch((error) => {
                 console.log(error)
@@ -143,9 +143,7 @@
       <div v-if="posts.length > 0">
         <h2>Post</h2>
         <div v-for="post in posts" :key="post.id">
-          <img v-if="postImages[post.id]" :src="postImages[post.id]" :alt="post.testo">
-          <p @click="console.log(postImages[post.id], post.id)">{{post.testo}}</p>
-          <p>{{post.userData.username}}</p>
+          <Post :post="post" :src="postImages[post.id]" />
         </div>
       </div>
     </div>

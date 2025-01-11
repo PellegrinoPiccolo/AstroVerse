@@ -45,7 +45,7 @@
           router.push(`/astroverse/space/${route.params.id}`)
         })
         .catch((error) => {
-          console.log("Errore creazione post " + error)
+          console.error("Errore creazione post " + error)
           toast.error("Errore nella creazione del post")
         })
   }

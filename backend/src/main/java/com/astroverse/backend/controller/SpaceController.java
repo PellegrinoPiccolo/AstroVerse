@@ -109,7 +109,6 @@ public class SpaceController {
             response.put("idAdmin", spaceService.getAdmin(space));
             List<Post> posts = spaceService.getPost(space);
             for (Post post : posts) {
-                System.out.println();
                 post.setUserData(new User(post.getUser().getId(),
                         post.getUser().getNome(),
                         post.getUser().getCognome(),

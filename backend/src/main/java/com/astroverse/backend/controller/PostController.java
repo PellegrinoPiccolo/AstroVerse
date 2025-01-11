@@ -3,8 +3,10 @@ package com.astroverse.backend.controller;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.model.Post;
 import com.astroverse.backend.model.User;
+import com.astroverse.backend.model.Vote;
 import com.astroverse.backend.service.PostService;
 import com.astroverse.backend.service.VotePostFacade;
+import com.astroverse.backend.service.VoteService;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -25,12 +28,14 @@ import java.util.regex.Pattern;
 public class PostController {
     private static final String testoRegex = "^[\\w\\s\\p{Punct}]{1,400}$";
     private final PostService postService;
+    private final VoteService voteService;
     private static final String directory = "uploads-post/";
     private final VotePostFacade votePostFacade;
 
-    public PostController(PostService postService, VotePostFacade votePostFacade) {
+    public PostController(PostService postService, VotePostFacade votePostFacade, VoteService voteService) {
         this.postService = postService;
         this.votePostFacade = votePostFacade;
+        this.voteService = voteService;
     }
 
     @PostMapping("/create/{id}")
@@ -139,6 +144,22 @@ public class PostController {
             }
         }
         response.put("message", "La modifica del post è avvenuta con successo");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/get-vote/{postId}")
+    public ResponseEntity<?> getVote(@PathVariable long postId, @RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
+        Map<String, Boolean> response = new HashMap<>();
+        DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
+        long userId = decodedJWT.getClaim("id").asLong();
+        Optional<Vote> optionalVote = voteService.existVote(userId, postId);
+        if(optionalVote.isPresent()) {
+            Vote vote = optionalVote.get();
+            response.put("message", vote.isVote());
+        } else {
+            response.put("message", null);
+        }
         return ResponseEntity.ok(response);
     }
 
