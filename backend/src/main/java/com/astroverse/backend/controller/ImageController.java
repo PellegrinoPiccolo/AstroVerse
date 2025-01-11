@@ -49,10 +49,10 @@ public class ImageController {
         try {
             byte[] image = FileUtils.readFileToByteArray(file);
             String type = Files.probeContentType(filePath);
-            if(type.equals("image/jpeg")) {
-                return ResponseEntity.ok(MediaType.IMAGE_JPEG);
+            if (type.equals("image/jpeg")) {
+                return ResponseEntity.status(200).contentType(MediaType.IMAGE_JPEG).body(image);
             } else {
-                return ResponseEntity.ok(MediaType.IMAGE_PNG);
+                return ResponseEntity.status(200).contentType(MediaType.IMAGE_PNG).body(image);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

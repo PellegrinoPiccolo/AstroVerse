@@ -18,6 +18,7 @@
   const posts = ref(null)
   const users = ref(null)
   const router = useRouter()
+  const postImages = ref({})
 
   watchEffect(() => {
     const id = route.params.id
@@ -62,6 +63,29 @@
         })
   })
 
+  watchEffect(() => {
+    if (posts.value !== null) {
+      posts.value.map((p) => {
+        if (p.file !== null) {
+          const splits = p.file.split("\\")
+          const imageName = splits[2]
+          apiUrlToken.get(`/images/post/${p.id}/${imageName}`, {
+            responseType: 'blob'
+          })
+              .then(async (response) => {
+                if (!postImages.value[p.id]) {
+                  postImages.value[p.id] = ref(URL.createObjectURL(await response.data));
+                }
+                console.log(p.id, postImages.value[p.id])
+              })
+              .catch((error) => {
+                console.log(error)
+              })
+        }
+      })
+    }
+  })
+
   const handleSubmit = () => {
     const body = new FormData()
     body.append("idSpazio", space.value.id)
@@ -100,6 +124,9 @@
       <button v-if="isAdmin" @click="router.push(`/astroverse/space/modify/${space.id}`)">
         Modifica spazio
       </button>
+      <button v-if="isSub" @click="router.push(`/astroverse/space/${space.id}/create-post`)">
+        Crea Post
+      </button>
       <RouterLink :to="`${space.id}/users`">Numero di utenti: {{users.length}}</RouterLink>
       <button v-if="isSub && !isAdmin" @click="handleSubmit">
         Disiscriviti
@@ -116,14 +143,11 @@
       <div v-if="posts.length > 0">
         <h2>Post</h2>
         <div v-for="post in posts" :key="post.id">
-          <p>{{post.testo}}</p>
+          <img v-if="postImages[post.id]" :src="postImages[post.id]" :alt="post.testo">
+          <p @click="console.log(postImages[post.id], post.id)">{{post.testo}}</p>
           <p>{{post.userData.username}}</p>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
