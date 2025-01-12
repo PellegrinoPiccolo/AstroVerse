@@ -126,11 +126,12 @@ public class AuthController {
     }
 
     @PostMapping("/change-user-data")
-    public ResponseEntity<?> changeUserData(@RequestBody ChangeUserRequest request, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> changeUserData(@RequestParam String nome, @RequestParam String cognome, @RequestParam String email, @RequestParam String username, @RequestParam String psw, @RequestParam String confirmPassword, @RequestParam String vecchiaPassword, @RequestHeader("Authorization") String token) {
         Map<String, String> response = new HashMap<>();
+        User user = new User(nome, cognome, username, email, psw);
+        ChangeUserRequest request = new ChangeUserRequest(user, confirmPassword, vecchiaPassword);
         try {
             token = token.replace("Bearer ", "");
-            User user = request.getUser();
             String confermaPassword = request.getConfermaPassword();
             String password = user.getPassword();
             DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);

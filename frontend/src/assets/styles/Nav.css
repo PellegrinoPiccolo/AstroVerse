@@ -79,7 +79,8 @@ footer {
     grid-template-columns: calc(100% - 4em);
     grid-template-rows: auto auto;
     justify-content: center;
-    gap: 2em;
+    gap: 0;
+    row-gap: 2em;
 }
 
 footer .footer-logo {

@@ -1,6 +1,6 @@
 <script setup>
   import {onMounted, ref} from "vue";
-  import {apiTokenJson, apiUrlToken} from "@/constants/ApiUrl.js";
+  import {apiTokenForm, apiTokenJson, apiUrlToken} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
   import Cookies from "js-cookie";
@@ -50,18 +50,15 @@
       toast.error("Le password non coincidono")
       return
     }
-    const body = JSON.stringify({
-      'user': {
-        "nome": user.value.nome,
-        "cognome": user.value.cognome,
-        "email": user.value.email,
-        "username": user.value.username,
-        "password": passwords.value.newPassword,
-      },
-      "confermaPassword": passwords.value.confirmNewPassword,
-      "vecchiaPassword": passwords.value.oldPassword
-    })
-    apiTokenJson.post('/auth/change-user-data', body)
+    const body = new FormData();
+    body.append("nome", user.value.nome);
+    body.append("cognome", user.value.cognome);
+    body.append("email", user.value.email);
+    body.append("username", user.value.username);
+    body.append("psw", passwords.value.newPassword);
+    body.append("confirmPassword", passwords.value.confirmNewPassword);
+    body.append("vecchiaPassword", passwords.value.oldPassword);
+    apiTokenForm.post('/auth/change-user-data', body)
         .then((response) => {
           const token = response.data.accessToken
           const message = response.data.message
