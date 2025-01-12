@@ -2,6 +2,8 @@ package com.astroverse.backend.repository;
 
 import com.astroverse.backend.model.Post;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +21,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Post findById(long id);
     boolean existsByUserIdAndId(Long userId, Long postId);  //verifica se l'utente ha creato il post
 
-    List<Post> findAllBySpaceId(Long id);
+    Page<Post> findAllBySpaceId(Long id, Pageable pageable);
+
+    int countBySpaceId(long id);
 }

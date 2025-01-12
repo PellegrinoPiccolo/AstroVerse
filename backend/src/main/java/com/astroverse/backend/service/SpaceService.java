@@ -7,6 +7,9 @@ import com.astroverse.backend.model.UserSpace;
 import com.astroverse.backend.repository.PostRepository;
 import com.astroverse.backend.repository.SpaceRepository;
 import com.astroverse.backend.repository.UserSpaceRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +62,10 @@ public class SpaceService {
         return userSpace.getUserId();
     }
     
-    public List<Post> getPost(Space space) {
-        return postRepository.findAllBySpaceId(space.getId());
+    public Page<Post> getPost(Space space, int limit, int offset) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        return postRepository.findAllBySpaceId(space.getId(), pageable);
     }
+
+
 }

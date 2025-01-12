@@ -112,7 +112,3 @@ const space = ref({
     </button>
   </div>
 </template>
-
-<style scoped>
-
-</style>

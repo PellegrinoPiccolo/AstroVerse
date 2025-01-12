@@ -84,15 +84,15 @@
               <FontAwesomeIcon :icon="faUser" />
             </RouterLink>
           </li>
-          <li class="search-container" style="position: relative">
+          <li class="search-container">
             <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon"/>
             <input type="text" placeholder="Cerca su AstroVerse" v-model="inputValue" @blur="handleBlur" @focus="handleFocus">
-            <div v-if="focus" style="position: absolute; top: 2em; background-color: #181818">
+            <div v-if="focus && inputValue !== ''" class="space-search-container">
               <div v-if="loading">
                 <VaProgressCircle indeterminate color="#fff"/>
               </div>
-              <div v-else>
-                <div v-for="space in spaces" v-if="spaces && spaces.length > 0" :key="space.id">
+              <div v-else class="router-container">
+                <div v-for="space in spaces" v-if="spaces && spaces.length > 0" :key="space.id" class="router-text-container">
                   <RouterLink :to="`/astroverse/space/${space.id}`">
                     {{space.title}}
                   </RouterLink>
@@ -110,31 +110,35 @@
       </div>
     </div>
     <footer>
-      <RouterLink to="/astroverse">
-        <img class="footer-logo" :src="logo" alt="AstroVerse logo"/>
-      </RouterLink>
-      <div class="section-container">
-        <div class="section">
-          <h2>Contatti</h2>
-          <ul>
-            <li><a href="mailto:p.piccolo4@studenti.unisa.it"> p.piccolo4@studenti.unisa.it</a></li>
-            <li><a href="mailto:a.devita40@studenti.unisa.it"> a.devita40@studenti.unisa.it</a></li>
-            <li><a href="mailto:c.fontana7@studenti.unisa.it">c.fontana7@studenti.unisa.it</a></li>
-            <li><a href="mailto:c.bianco9@studenti.unisa.it">c.bianco9@studenti.unisa.it</a></li>
-          </ul>
+      <div class="top-container">
+        <RouterLink to="/astroverse">
+          <img class="footer-logo" :src="logo" alt="AstroVerse logo"/>
+        </RouterLink>
+        <div class="section-container">
+          <div class="section">
+            <h2>Contatti</h2>
+            <ul>
+              <li><a href="mailto:p.piccolo4@studenti.unisa.it"> p.piccolo4@studenti.unisa.it</a></li>
+              <li><a href="mailto:a.devita40@studenti.unisa.it"> a.devita40@studenti.unisa.it</a></li>
+              <li><a href="mailto:c.fontana7@studenti.unisa.it">c.fontana7@studenti.unisa.it</a></li>
+              <li><a href="mailto:c.bianco9@studenti.unisa.it">c.bianco9@studenti.unisa.it</a></li>
+            </ul>
+          </div>
         </div>
-        <div class="section">
-          <h2>GitHub</h2>
-          <ul>
-            <li><a href="https://github.com/PellegrinoPiccolo/AstroVerse" target="_blank">AstroVerse</a></li>
-          </ul>
-          <h2>Sede</h2>
-          <ul>
-            <li><a href="https://maps.app.goo.gl/JXCRRe5Tcgj3B7Fh6" target="_blank">Via delle Stelle, 84084 Fisciano (SA)</a></li>
-          </ul>
+        <div class="section-container">
+          <div class="section">
+            <h2>GitHub</h2>
+            <ul>
+              <li><a href="https://github.com/PellegrinoPiccolo/AstroVerse" target="_blank">AstroVerse</a></li>
+            </ul>
+            <h2>Sede</h2>
+            <ul>
+              <li><a href="https://maps.app.goo.gl/JXCRRe5Tcgj3B7Fh6" target="_blank">Via delle Stelle, 84084 Fisciano (SA)</a></li>
+            </ul>
+          </div>
         </div>
       </div>
-      <p class="trademark">AstroVerse {{ currentYear }}© All Rights Reserved</p>
+      <p class="trademark">Copyright {{ currentYear }}© Astroverse. <a href="https://opensource.org/license/mit">Released under MIT license.</a></p>
     </footer>
   </div>
 </template>

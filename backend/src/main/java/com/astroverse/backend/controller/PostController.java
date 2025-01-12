@@ -8,6 +8,7 @@ import com.astroverse.backend.service.PostService;
 import com.astroverse.backend.service.VotePostFacade;
 import com.astroverse.backend.service.VoteService;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
@@ -40,7 +38,7 @@ public class PostController {
 
     @PostMapping("/create/{id}")
     public ResponseEntity<?> createPost(@RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token, @PathVariable long id) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         if (!isValidText(testo, testoRegex)) {
             System.out.println("PROVA QUA");
@@ -88,6 +86,7 @@ public class PostController {
             }
         }
         response.put("message", "Poste creato con successo");
+        response.put("newPost", createdPost);
         return ResponseEntity.ok(response);
     }
 
@@ -172,6 +171,28 @@ public class PostController {
         } else {
             response.put("message", null);
         }
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/get-posts/{page}")
+    public ResponseEntity<?> getAllPosts(@PathVariable int page) {
+        Map<String, Object> response = new HashMap<>();
+        int limit = 40;
+        int offset = (page-1)*limit;
+        Page<Post> posts = postService.getAllPosts(limit, offset);
+        List<Post> postList = posts.getContent().stream().toList();
+        for (Post post : posts) {
+            post.setUserData(new User(post.getUser().getId(),
+                    post.getUser().getNome(),
+                    post.getUser().getCognome(),
+                    post.getUser().getUsername(),
+                    post.getUser().getEmail())
+            );
+        }
+        long totalPosts = postService.getNumberOfAllPosts();
+        long numberOfPages = (long) Math.ceil((double) totalPosts/limit);
+        response.put("posts", postList);
+        response.put("numberOfPages", numberOfPages);
         return ResponseEntity.ok(response);
     }
 

@@ -50,4 +50,3 @@ To clone the project locally follow these steps:
 - [Vue.js](https://vuejs.org/) - Javascript framework used for the front-end dynamic pages development
 - [CSS](https://www.w3schools.com/css/default.asp) - For the graphic part of the front-end pages
 - [Javascript](https://www.javascript.com/) - Used for accessing to the requests of the back-end server
-- [Python](https://www.python.org/) - Used for the Artificial Intelligence Module of AstroVerse software

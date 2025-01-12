@@ -5,6 +5,7 @@ import com.astroverse.backend.model.Post;
 import com.astroverse.backend.model.Space;
 import com.astroverse.backend.model.User;
 import com.astroverse.backend.model.UserSpace;
+import com.astroverse.backend.service.PostService;
 import com.astroverse.backend.service.SpaceService;
 import com.astroverse.backend.service.UserService;
 import com.astroverse.backend.service.UserSpaceService;
@@ -31,11 +32,13 @@ public class SpaceController {
     private static final String directory = "uploads/";
     private final UserService userService;
     private final UserSpaceService userSpaceService;
+    private final PostService postService;
 
-    public SpaceController(SpaceService spaceService, UserService userService, UserSpaceService userSpaceService) {
+    public SpaceController(SpaceService spaceService, UserService userService, UserSpaceService userSpaceService, PostService postService) {
         this.spaceService = spaceService;
         this.userService = userService;
         this.userSpaceService = userSpaceService;
+        this.postService = postService;
     }
 
     public boolean isValidText(String text, String regex) {
@@ -97,17 +100,20 @@ public class SpaceController {
         return ResponseEntity.status(500).body(response);
     }
 
-    @GetMapping("/view/{id}")
-    public ResponseEntity<?> viewSpace(@PathVariable Long id) {
+    @GetMapping("/view/{id}/{page}")
+    public ResponseEntity<?> viewSpace(@PathVariable Long id, @PathVariable int page) {
         Map<String, Object> response = new HashMap<>();
         Optional<Space> optional = spaceService.getSpace(id);
+        int limit = 30;
+        int offset = (page-1)*limit;
         if (optional.isPresent()) {
             Space space = optional.get();
             List<User> users = spaceService.getUsersBySpace(space);
             response.put("message", space);
             response.put("users", users);
             response.put("idAdmin", spaceService.getAdmin(space));
-            List<Post> posts = spaceService.getPost(space);
+            Page<Post> posts = spaceService.getPost(space, limit, offset);
+            List<Post> postList = posts.getContent().stream().toList();
             for (Post post : posts) {
                 post.setUserData(new User(post.getUser().getId(),
                         post.getUser().getNome(),
@@ -116,7 +122,9 @@ public class SpaceController {
                         post.getUser().getEmail())
                 );
             }
-            response.put("posts", spaceService.getPost(space));
+            response.put("posts", postList);
+            int totalNumberOfPosts = postService.getNumberOfPosts(space);
+            response.put("numberOfPages", Math.ceil((double) totalNumberOfPosts/limit));
             return ResponseEntity.ok(response);
         } else {
             response.put("error", "Questo spazio non esiste");
