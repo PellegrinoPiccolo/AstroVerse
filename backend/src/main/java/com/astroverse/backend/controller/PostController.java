@@ -100,7 +100,7 @@ public class PostController {
     }
 
     @PostMapping("/modify/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token, @RequestParam(value = "imageDeleted", required = false) boolean imageDeleted) {
         Map<String, String> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         if (!isValidText(testo, testoRegex)) {
@@ -116,7 +116,17 @@ public class PostController {
         Post post = postService.getPost(id);
         post.setTesto(testo);
         postService.savePost(post);
-        if (file != null && !file.isEmpty()) {
+        if(imageDeleted) {
+            Path oldFilePath = Paths.get(post.getFile());
+            if (Files.exists(oldFilePath)) {
+                try {
+                    Files.delete(oldFilePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            postService.saveImage(post.getId(), null);
+        } else if (file != null && !file.isEmpty()) {
             if(!checkImageFile(file)) {
                 response.put("error", "Formato dell'immagine non valido");
                 return ResponseEntity.status(400).body(response);
@@ -130,9 +140,11 @@ public class PostController {
                 if (!Files.exists(postPath)) {
                     Files.createDirectories(postPath);
                 }
-                Path oldFilePath = Paths.get(post.getFile());
-                if (Files.exists(oldFilePath)) {
-                    Files.delete(oldFilePath);
+                if(post.getFile() != null) {
+                    Path oldFilePath = Paths.get(post.getFile());
+                    if (Files.exists(oldFilePath)) {
+                        Files.delete(oldFilePath);
+                    }
                 }
                 String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
                 Path filePath = postPath.resolve(fileName);

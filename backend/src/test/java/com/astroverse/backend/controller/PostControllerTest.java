@@ -70,7 +70,7 @@ public class PostControllerTest {
         when(postService.isCreationUser(anyLong(), anyLong())).thenReturn(true);
         when(postService.getPost(space.getId())).thenReturn(post);
         when(postService.savePost(post)).thenReturn(post);
-        ResponseEntity<?> responseModify = postController.modifyPost(space.getId(), post.getTesto(), null, exampleToken);
+        ResponseEntity<?> responseModify = postController.modifyPost(space.getId(), post.getTesto(), null, exampleToken, false);
         assertEquals(HttpStatus.OK, responseModify.getStatusCode());
     }
 }
