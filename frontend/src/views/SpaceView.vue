@@ -9,6 +9,7 @@
   import Post from "@/components/Post.vue";
   import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+  import "@/assets/styles/Space.css"
 
   const route = useRoute()
   const space = ref(null)
@@ -128,36 +129,44 @@
 </script>
 
 <template>
-  <div>
-    <div v-if="loadingImage">
-      <VaProgressCircle indeterminate color="#262626"/>
-    </div>
-    <div v-else>
-      <img :src="image" :alt="space.title" />
-    </div>
-    <div v-if="loading">
-      <VaProgressCircle indeterminate color="#262626"/>
-    </div>
-    <div v-else>
-      <button v-if="isAdmin" @click="router.push(`/astroverse/space/modify/${space.id}`)">
-        Modifica spazio
-      </button>
-      <button v-if="isSub" @click="router.push(`/astroverse/space/${space.id}/create-post`)">
-        Crea Post
-      </button>
-      <RouterLink :to="`${space.id}/users`">Numero di utenti: {{users.length}}</RouterLink>
-      <button v-if="isSub && !isAdmin" @click="handleSubmit">
-        Disiscriviti
-      </button>
-      <button v-else-if="!isSub && !isAdmin" @click="handleSubmit">
-        Iscriviti
-      </button>
-      <h1>{{space.title}}</h1>
-      <p>{{space.description}}</p>
-      <div>
-        <p>Argomento</p>
-        <p>{{space.argument}}</p>
+  <div class="container-space-view">
+    <div class="top-space-container">
+      <div class="image-space-container">
+        <div v-if="loadingImage" style="display: flex; flex-direction: column; justify-content: center;">
+          <VaProgressCircle indeterminate color="#fff" style="align-self: center"/>
+        </div>
+        <div v-else>
+          <img :src="image" :alt="space.title" />
+        </div>
       </div>
+      <div v-if="loading">
+        <VaProgressCircle indeterminate color="#262626"/>
+      </div>
+      <div v-else>
+        <h1>{{space.title}}</h1>
+        <p class="description-space">{{space.description}}</p>
+        <div class="argument-section">
+          <h2>Argomento</h2>
+          <p>{{space.argument}}</p>
+        </div>
+        <div class="button-section">
+          <button v-if="isAdmin" @click="router.push(`/astroverse/space/modify/${space.id}`)">
+            Modifica spazio
+          </button>
+          <button v-if="isSub" @click="router.push(`/astroverse/space/${space.id}/create-post`)">
+            Crea Post
+          </button>
+          <RouterLink :to="`${space.id}/users`">Numero di utenti: {{users.length}}</RouterLink>
+          <button v-if="isSub && !isAdmin" @click="handleSubmit">
+            Disiscriviti
+          </button>
+          <button v-else-if="!isSub && !isAdmin" @click="handleSubmit">
+            Iscriviti
+          </button>
+        </div>
+      </div>
+    </div>
+    <div>
       <div v-if="posts.length > 0">
         <h2>Post</h2>
         <div v-for="post in posts" :key="post.id">

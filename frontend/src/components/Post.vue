@@ -8,8 +8,10 @@ import {defineProps, onMounted, ref} from "vue";
   import Cookies from "js-cookie";
   import {jwtDecode} from "jwt-decode";
   import {isValidImageType, isValidPostText} from "@/constants/regexTest.js";
+  import "@/assets/styles/Post.css";
 
-  const {post, src} = defineProps({
+
+const {post, src} = defineProps({
     post: {
       type: Object,
       required: true,

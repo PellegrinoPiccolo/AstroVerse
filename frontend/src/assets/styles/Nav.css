@@ -41,6 +41,7 @@ nav {
     padding: .4em .6em;
     border-radius: 10px;
     background-color: #181818;
+    position: relative;
 }
 
 .link-container .search-container input {
@@ -72,18 +73,26 @@ nav {
 footer {
     width: 100%;
     box-sizing: border-box;
-    padding: 2em 6em;
+    padding: 2em 0;
     background-color: #262626;
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: calc(100% - 4em);
     grid-template-rows: auto auto;
-    gap: .4em;
+    justify-content: center;
+    gap: 2em;
 }
 
 footer .footer-logo {
     width: 100px;
     height: 100px;
     cursor: pointer;
+}
+
+footer .top-container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: .4em;
+    width: 100%;
 }
 
 footer a {
@@ -122,13 +131,13 @@ footer .section ul li a:hover {
     text-decoration: underline;
 }
 
+p a:hover {
+    text-decoration: underline;
+}
 
 footer .section-container {
     display: flex;
-    flex-direction: row;
-    justify-content: right;
-    align-items: flex-start;
-    gap: 5em;
+    justify-content: center;
 }
 
 footer .trademark {
@@ -136,6 +145,7 @@ footer .trademark {
     text-align: center;
     color: lightgray;
     font-size: 12px;
+    width: 100%;
 }
 
 .container {
@@ -152,4 +162,39 @@ footer .trademark {
 .page-container {
     display: flex;
     flex-direction: column;
+}
+
+.space-search-container {
+    position: absolute;
+    top: 2em;
+    background-color: #181818;
+    right: 0;
+    width: 100%;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: .2em .4em;
+    max-height: 10em;
+    overflow-y: auto;
+}
+
+.space-search-container a, p {
+    font-size: 18px;
+    font-family: 'Roboto', serif;
+    margin: 0;
+    word-break: break-word;
+    padding: 0;
+}
+
+.space-search-container a:hover {
+    text-decoration: underline;
+}
+
+.space-search-container .router-container .router-text-container {
+    line-height: 1;
+}
+
+.space-search-container .router-container {
+    display: flex;
+    flex-direction: column;
+    gap: .4em;
 }
