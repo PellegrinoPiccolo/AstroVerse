@@ -7,9 +7,10 @@
   import Cookies from "js-cookie";
   import {jwtDecode} from "jwt-decode";
   import Post from "@/components/Post.vue";
-  import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
+  import {faArrowLeft, faArrowRight, faX} from "@fortawesome/free-solid-svg-icons";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import "@/assets/styles/Space.css"
+  import {isNotOrNull, isValidImageType, isValidPostText} from "@/constants/regexTest.js";
 
   const route = useRoute()
   const space = ref(null)
@@ -25,6 +26,14 @@
   const postImages = ref({})
   const numberOfPages = ref(0)
   const pageRef = ref((route.query.page && route.query.page > 0 && route.query.page !== '') ? route.query.page : 1)
+  const isOpen = ref(false)
+  const imageCreate = ref(null)
+  const newPost = ref({
+    text: '',
+    argument: '',
+    file: null
+  })
+  const inputSelection = ref(null)
 
   watchEffect(() => {
     const id = route.params.id
@@ -70,9 +79,6 @@
               })
         })
         .catch((error) => {
-          if (error.response) {
-            toast.error(err.response.data.error)
-          }
           console.error(error)
         })
   })
@@ -116,15 +122,67 @@
         })
         .catch((error) => {
           isSub.value = false
-          if(error.response) {
-            toast.error(error.response.data.error)
-          }
         })
   }
 
   const handleChange = (newPage) => {
     router.push(`?page=${newPage}`)
     pageRef.value = newPage
+  }
+
+  const changeImage = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      imageCreate.value = URL.createObjectURL(file)
+      newPost.value.file = file
+    }
+  }
+
+  const openSelectionImage = () =>{
+    inputSelection.value.click()
+  }
+
+  const handleCreatePost = () => {
+    if (!isValidPostText(newPost.value.text)) {
+      toast.error("Testo del post non valido")
+      isOpen.value = true
+      return
+    } else if (!isNotOrNull(newPost.value.file) && !isValidImageType(newPost.value.file)) {
+      isOpen.value = true
+      toast.error("Immagine non valida")
+      return
+    }
+    const body = new FormData()
+    body.append("testo", newPost.value.text)
+    if (newPost.value.file !== null) {
+      body.append("file", newPost.value.file)
+    }
+    apiTokenForm.post(`/post/create/${route.params.id}`, body)
+        .then((response) => {
+          const token = Cookies.get("accessToken")
+          posts.value.push({
+            testo: newPost.value.text,
+            argument: newPost.value.argument,
+            file: response.data.newPost.file,
+            userData: jwtDecode(token),
+            id: response.data.newPost.id,
+            createdAt: response.data.newPost.createdAt
+          });
+          posts.value = posts.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          if (imageCreate.value !== null) {
+            postImages.value[response.data.newPost.id] = imageCreate.value;
+          }
+          newPost.value = {
+            text: '',
+            argument: '',
+            file: null
+          }
+        })
+        .catch((error) => {
+
+          console.error("Errore creazione post " + error)
+          toast.error("Errore nella creazione del post")
+        })
   }
 </script>
 
@@ -153,7 +211,7 @@
           <button v-if="isAdmin" @click="router.push(`/astroverse/space/modify/${space.id}`)">
             Modifica spazio
           </button>
-          <button v-if="isSub" @click="router.push(`/astroverse/space/${space.id}/create-post`)">
+          <button v-if="isSub" @click="isOpen = true">
             Crea Post
           </button>
           <RouterLink :to="`${space.id}/users`">Numero di utenti: {{users.length}}</RouterLink>
@@ -167,7 +225,7 @@
       </div>
     </div>
     <div>
-      <div v-if="posts.length > 0">
+      <div v-if="posts !== null && posts.length > 0">
         <h2>Post</h2>
         <div v-for="post in posts" :key="post.id">
           <Post :post="post" :src="postImages[post.id]" />
@@ -183,4 +241,14 @@
       <FontAwesomeIcon :icon="faArrowRight" />
     </button>
   </div>
+  <VaModal v-model="isOpen" ok-text="Salva post" cancel-text="Annulla" @ok="handleCreatePost">
+    <div>
+      <h1>Crea il tuo post:</h1>
+      <img v-if="imageCreate" :src="imageCreate" alt="Immagine post"/>
+      <button @click="openSelectionImage">Seleziona un immagine per il tuo post</button>
+      <input type="file" ref="inputSelection" style="display: none" @change="changeImage" accept="image/png, image/jpeg"/>
+      <label for="text">Testo del post</label>
+      <input type="text" id="text" name="text" placeholder="Inserisci il testo per questo post" v-model="newPost.text">
+    </div>
+  </VaModal>
 </template>

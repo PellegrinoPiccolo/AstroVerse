@@ -23,7 +23,7 @@
   watchEffect(() => {
     const id = route.params.id
     const token = Cookies.get('accessToken')
-    apiUrlToken.get(`/space/view/${id}`)
+    apiUrlToken.get(`/space/view/${id}/1`)
         .then((response) => {
           space.value = response.data.message
           const userData = response.data.users

@@ -38,7 +38,7 @@ public class PostController {
 
     @PostMapping("/create/{id}")
     public ResponseEntity<?> createPost(@RequestParam String testo, @RequestParam(value = "file", required = false) MultipartFile file, @RequestHeader("Authorization") String token, @PathVariable long id) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         if (!isValidText(testo, testoRegex)) {
             System.out.println("PROVA QUA");
@@ -86,6 +86,7 @@ public class PostController {
             }
         }
         response.put("message", "Poste creato con successo");
+        response.put("newPost", createdPost);
         return ResponseEntity.ok(response);
     }
 
