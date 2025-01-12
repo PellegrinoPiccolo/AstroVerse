@@ -7,6 +7,8 @@
   import Cookies from "js-cookie";
   import {jwtDecode} from "jwt-decode";
   import Post from "@/components/Post.vue";
+  import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
+  import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
   const route = useRoute()
   const space = ref(null)
@@ -20,12 +22,22 @@
   const users = ref(null)
   const router = useRouter()
   const postImages = ref({})
+  const numberOfPages = ref(0)
+  const pageRef = ref((route.query.page && route.query.page > 0 && route.query.page !== '') ? route.query.page : 1)
 
   watchEffect(() => {
     const id = route.params.id
-    apiUrlToken.get(`/space/view/${id}`)
+    apiUrlToken.get(`/space/view/${id}/${pageRef.value}`)
         .then((response) => {
           space.value = response.data.message
+          numberOfPages.value = response.data.numberOfPages
+          if (route.query.page < 1) {
+            router.push("?page=1")
+            pageRef.value = route.query.page
+          } else if(route.query.page > numberOfPages.value) {
+            router.push(`?page=${numberOfPages.value}`)
+            pageRef.value = numberOfPages.value
+          }
           const userData = response.data.users
           users.value = userData
           posts.value = response.data.posts
@@ -83,6 +95,7 @@
               })
         }
       })
+      posts.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     }
   })
 
@@ -106,6 +119,11 @@
             toast.error(error.response.data.error)
           }
         })
+  }
+
+  const handleChange = (newPage) => {
+    router.push(`?page=${newPage}`)
+    pageRef.value = newPage
   }
 </script>
 
@@ -147,5 +165,13 @@
         </div>
       </div>
     </div>
+  </div>
+  <div v-if="numberOfPages > 1">
+    <button @click="handleChange(pageRef - 1)">
+      <FontAwesomeIcon :icon="faArrowLeft" />
+    </button>
+    <button @click="handleChange(pageRef + 1)">
+      <FontAwesomeIcon :icon="faArrowRight" />
+    </button>
   </div>
 </template>

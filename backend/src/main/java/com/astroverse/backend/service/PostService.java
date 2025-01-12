@@ -1,6 +1,7 @@
 package com.astroverse.backend.service;
 
 import com.astroverse.backend.model.Post;
+import com.astroverse.backend.model.Space;
 import com.astroverse.backend.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,9 @@ public class PostService {
 
     public boolean isCreationUser(long idUtente, long idPost) {
         return postRepository.existsByUserIdAndId(idUtente, idPost);
+    }
+
+    public int getNumberOfPosts(Space space) {
+        return postRepository.countBySpaceId(space.getId());
     }
 }
