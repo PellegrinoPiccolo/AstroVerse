@@ -87,13 +87,17 @@ footer .footer-logo {
     width: 100px;
     height: 100px;
     cursor: pointer;
+    display: block;
+    margin: 0 auto;
 }
 
 footer .top-container {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 30% 30% 30%;
     gap: .4em;
-    width: 100%;
+    width: calc(90% + 1.2em);
+    margin: 0 auto;
+    justify-content: center;
 }
 
 footer a {

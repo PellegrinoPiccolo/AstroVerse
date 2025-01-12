@@ -67,5 +67,12 @@ public class SpaceService {
         return postRepository.findAllBySpaceId(space.getId(), pageable);
     }
 
+    public Page<Space> getAllSpaces(int limit, int offset) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        return spaceRepository.findAll(pageable);
+    }
 
+    public long getNumberOfSpaces() {
+        return spaceRepository.count();
+    }
 }
