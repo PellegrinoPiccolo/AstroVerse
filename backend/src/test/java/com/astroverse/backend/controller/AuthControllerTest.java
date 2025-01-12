@@ -101,7 +101,7 @@ public class AuthControllerTest {
         mockUser.setPassword("");
         when(userService.changeUserData(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome(), "test@example.com", mockUser.getUsername())).thenReturn(mockUser);
         ChangeUserRequest changeUserRequest = new ChangeUserRequest(mockUser, "", "");
-        ResponseEntity<?> response = authController.changeUserData(changeUserRequest, token);
+        ResponseEntity<?> response = authController.changeUserData(mockUser.getNome(), mockUser.getCognome(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getPassword(), "", "", token);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }

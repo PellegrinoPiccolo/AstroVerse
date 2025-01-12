@@ -9,6 +9,7 @@ import CreateSpaceView from "@/views/CreateSpaceView.vue";
 import SpaceView from "@/views/SpaceView.vue";
 import UsersSpaceView from "@/views/UsersSpaceView.vue";
 import SpaceModifyView from "@/views/SpaceModifyView.vue";
+import SpacesView from "@/views/SpacesView.vue";
 
 const checkUser = async () => {
   const accessToken = Cookies.get('accessToken') || '';
@@ -67,6 +68,11 @@ const router = createRouter({
           path: 'space/modify/:id',
           name: 'SpaceModifyView',
           component: SpaceModifyView
+        },
+        {
+          path: 'spaces',
+          name: 'SpacesView',
+          component: SpacesView
         }
       ]
     },

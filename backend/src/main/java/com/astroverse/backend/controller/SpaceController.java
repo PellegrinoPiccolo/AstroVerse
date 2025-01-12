@@ -261,6 +261,19 @@ public class SpaceController {
         }
     }
 
+    @GetMapping("/get-all-spaces/{page}")
+    public ResponseEntity<?> getAllSpaces(@PathVariable int page){
+        Map<String, Object> response = new HashMap<>();
+        int limit = 30;
+        int offset = (page-1)*limit;
+        Page<Space> spaces = spaceService.getAllSpaces(limit, offset);
+        List<Space> spaceList = spaces.getContent().stream().toList();
+        long numberOfPages = spaceService.getNumberOfSpaces();
+        response.put("spaces", spaceList);
+        response.put("numberOfPages", numberOfPages);
+        return ResponseEntity.ok(response);
+    }
+
     protected boolean checkImageFile(MultipartFile file) {
         String contentType = file.getContentType();
         return contentType.equals("image/jpeg") || contentType.equals("image/png");

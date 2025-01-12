@@ -75,7 +75,7 @@
             </RouterLink>
           </li>
           <li>
-            <RouterLink to="/astroverse">
+            <RouterLink to="/astroverse/spaces">
               <FontAwesomeIcon :icon="faUsers" />
             </RouterLink>
           </li>
