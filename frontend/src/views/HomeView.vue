@@ -1,11 +1,12 @@
 <script setup>
-import {onMounted, ref, watchEffect} from "vue";
-import {apiUrlToken} from "@/constants/ApiUrl.js";
-import {toast} from "vue3-toastify";
-import {useRoute, useRouter} from "vue-router";
-import Post from "@/components/Post.vue";
-import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+  import {onMounted, ref, watchEffect} from "vue";
+  import {apiUrlToken} from "@/constants/ApiUrl.js";
+  import {toast} from "vue3-toastify";
+  import {useRoute, useRouter} from "vue-router";
+  import Post from "@/components/Post.vue";
+  import {faArrowLeft, faArrowRight, faPlus} from "@fortawesome/free-solid-svg-icons";
+  import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+  import "@/assets/styles/Home.css"
 
   const user = ref(null)
   const loading = ref(true)
@@ -101,36 +102,39 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 </script>
 
 <template>
-  <div>
-    <div>
-      <div v-if="loading">
+  <div class="home-container">
+    <div class="home-left-section">
+      <div v-if="loading" class="loading-bar-home">
         <VaProgressCircle indeterminate color="#262626"/>
       </div>
-      <RouterLink v-if="!loading" to="astroverse/create/space">
+      <RouterLink v-if="!loading" to="astroverse/create/space" class="button-create-space">
         <button>
+          <FontAwesomeIcon :icon="faPlus"/>
           Crea Spazio
         </button>
       </RouterLink>
-      <div v-for="space in orderedSpaces" :key="space.id">
-        <RouterLink :to="`astroverse/space/${space.id}`">
-          <img :src="images[space.id]" :alt="space.title">
+      <div v-for="space in orderedSpaces" :key="space.id" style="width: 100%">
+        <RouterLink :to="`astroverse/space/${space.id}`" class="space-card-container">
+          <div>
+            <img :src="images[space.id]" :alt="space.title">
+          </div>
           <p>
             {{ space.title }}
           </p>
         </RouterLink>
       </div>
     </div>
-    <div>
-      <div v-for="post in posts" :key="post.id">
-        <Post :post="post" :src="postImages[post.id]" />
+    <div class="home-right-section">
+      <div v-for="post in posts" :key="post.id" style="width: 100%">
+        <Post :post="post" :src="postImages[post.id]"/>
       </div>
-      <div v-if="numberOfPages > 1">
-        <button @click="handleChange(pageRef - 1)">
-          <FontAwesomeIcon :icon="faArrowLeft" />
-        </button>
-        <button @click="handleChange(pageRef + 1)">
-          <FontAwesomeIcon :icon="faArrowRight" />
-        </button>
+      <div v-if="numberOfPages > 1" class="arrow-post-container">
+        <v-btn variant="outlined" color="white" @click="handleChange(pageRef - 1)">
+          <FontAwesomeIcon :icon="faArrowLeft" class="icon-post"/>
+        </v-btn>
+        <v-btn variant="outlined" color="white" @click="handleChange(pageRef + 1)">
+          <FontAwesomeIcon :icon="faArrowRight" class="icon-post"/>
+       </v-btn>
       </div>
     </div>
   </div>

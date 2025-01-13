@@ -18,13 +18,14 @@ nav {
     background-color: #181818;
     justify-content: space-between;
     align-items: center;
+    z-index: 99;
 }
 
 .link-container {
     display: flex;
     flex-direction: row;
     list-style-type: none;
-    gap: 1.4em;
+    gap: 1.4em !important;
     align-items: center;
 }
 
@@ -168,6 +169,7 @@ footer .trademark {
 .page-container {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 .space-search-container {

@@ -34,6 +34,8 @@ const {post, src} = defineProps({
   const localPost = ref(newPost)
   const srcRef = ref(null)
   const imageDeleted = ref(false)
+  const upVotes = ref(0)
+  const downVotes = ref(0)
 
   onMounted(() => {
     newPost = {...postRef.value}
@@ -43,6 +45,8 @@ const {post, src} = defineProps({
     if (post.userData.id === user.id) {
       isCreator.value = true
     }
+    upVotes.value = post.votes.filter((vote) => vote.vote === true).length
+    downVotes.value = post.votes.filter((vote) => vote.vote !== true).length
     apiUrlToken.get(`/post/get-vote/${post.id}`)
         .then((response) => {
           isVoted.value = response.data.message
@@ -58,8 +62,23 @@ const {post, src} = defineProps({
     apiTokenForm.post(`/post/vote/${post.id}`, body)
         .then((response) => {
           if (isVoted.value !== voteType) {
+            if (isVoted.value) {
+              upVotes.value = upVotes.value - 1
+            } else if (isVoted.value === false) {
+              downVotes.value = downVotes.value - 1
+            }
             isVoted.value = voteType
+            if (voteType) {
+              upVotes.value = upVotes.value + 1
+            } else {
+              downVotes.value = downVotes.value + 1
+            }
           } else {
+            if (isVoted.value) {
+              upVotes.value = upVotes.value - 1
+            } else {
+              downVotes.value = downVotes.value - 1
+            }
             isVoted.value = null
           }
         })
@@ -118,20 +137,33 @@ const {post, src} = defineProps({
 </script>
 
 <template>
-  <div>
-    <button @click="isOpen = true" v-if="isCreator">
-      <FontAwesomeIcon :icon="faPenToSquare"/>
-    </button>
+  <div class="post-container">
+    <div class="text-container-post">
+      <div class="top-post-section">
+        <div class="user-data-container-post">
+          <p>{{post.userData.nome + " " + post.userData.cognome}}</p>
+          <p>{{post.userData.username}}</p>
+        </div>
+        <button @click="isOpen = true" v-if="isCreator">
+          <FontAwesomeIcon :icon="faPenToSquare" class="icon-post"/>
+        </button>
+      </div>
+      <p>{{post.testo}}</p>
+    </div>
     <img v-if="(srcRef !== null && srcRef !== undefined) ? (srcRef !== '' ? srcRef : false) : src" :src="srcRef ? srcRef : src" :alt="post.testo">
-    <p>{{post.testo}}</p>
-    <p>{{post.userData.username}}</p>
-    <div>
-      <button @click="vote(true)">
-        <FontAwesomeIcon :icon="faChevronUp" :style="{color: isVoted !== null && isVoted === true ? 'red' : 'black'}"></FontAwesomeIcon>
-      </button>
-      <button @click="vote(false)">
-        <FontAwesomeIcon :icon="faChevronDown" :style="{color: isVoted !== null && isVoted === false ? 'red' : 'black'}"></FontAwesomeIcon>
-      </button>
+    <div class="vote-container">
+      <div>
+        <button @click="vote(true)">
+          <FontAwesomeIcon :icon="faChevronUp" class="icon-vote" :style="{color: isVoted !== null && isVoted === true ? '#a285ff' : 'white'}"></FontAwesomeIcon>
+        </button>
+        <p>{{upVotes}}</p>
+      </div>
+      <div>
+        <button @click="vote(false)">
+          <FontAwesomeIcon :icon="faChevronDown" class="icon-vote" :style="{color: isVoted !== null && isVoted === false ? '#a285ff' : 'white'}"></FontAwesomeIcon>
+        </button>
+        <p>{{downVotes}}</p>
+      </div>
     </div>
   </div>
   <VaModal v-model="isOpen" ok-text="Salva modifiche" cancel-text="Annulla" @ok="handleChangePost">
