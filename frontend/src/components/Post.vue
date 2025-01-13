@@ -143,7 +143,7 @@ const {post, src} = defineProps({
 </script>
 
 <template>
-  <VaCard :style="`background-color: #4e0a70; padding:${(srcRef || src) ? '2em 0 0 0' : '0'}`">
+  <VaCard :style="`background-color: #FFFFFFFF; padding:${(srcRef || src) ? '2em 0 0 0' : '0'}`">
     <img class="post-image" v-if="(srcRef !== null && srcRef !== undefined) ? (srcRef !== '' ? srcRef : false) : src" :src="srcRef ? srcRef : src" :alt="post.testo">
     <VaCardTitle class="post-content">
       <p>{{post.userData.username}}</p>
@@ -157,13 +157,13 @@ const {post, src} = defineProps({
     <VaCardContent class="vote-container">
       <div>
         <button @click="vote(true)">
-          <FontAwesomeIcon :icon="faChevronUp" class="icon-vote" :style="{color: isVoted !== null && isVoted === true ? '#429172' : 'white'}"></FontAwesomeIcon>
+          <FontAwesomeIcon :icon="faChevronUp" class="icon-vote" :style="{color: isVoted !== null && isVoted === true ? '#429172' : 'black'}"></FontAwesomeIcon>
         </button>
         <p>{{upVotes}}</p>
       </div>
       <div>
         <button @click="vote(false)">
-          <FontAwesomeIcon :icon="faChevronDown" class="icon-vote" :style="{color: isVoted !== null && isVoted === false ? 'red' : 'white'}"></FontAwesomeIcon>
+          <FontAwesomeIcon :icon="faChevronDown" class="icon-vote" :style="{color: isVoted !== null && isVoted === false ? 'red' : 'black'}"></FontAwesomeIcon>
         </button>
         <p>{{downVotes}}</p>
       </div>
