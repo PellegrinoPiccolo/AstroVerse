@@ -4,7 +4,7 @@ body {
     font-family: 'Roboto', serif;
     min-height: 100vh;
     position: relative;
-    background-color: #262626;
+    background-color: #181818;
 }
 
 nav {
@@ -15,10 +15,13 @@ nav {
     width: 100%;
     box-sizing: border-box;
     padding: 1em 2em;
-    background-color: #181818;
+    background-color: #262626;
     justify-content: space-between;
     align-items: center;
     z-index: 98;
+    box-shadow: -3px 8px 16px -2px rgba(27,27,27,0.45);
+    -webkit-box-shadow: -3px 8px 16px -2px rgba(27,27,27,0.45);
+    -moz-box-shadow: -3px 8px 16px -2px rgba(27,27,27,0.45);
 }
 
 .link-container {
@@ -76,7 +79,7 @@ footer {
     width: 100%;
     box-sizing: border-box;
     padding: 2em 0;
-    background-color: #181818;
+    background-color: #262626;
     display: grid;
     grid-template-columns: calc(100% - 4em);
     grid-template-rows: auto auto;

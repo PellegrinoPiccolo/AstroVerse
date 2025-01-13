@@ -1,5 +1,5 @@
 .post-container {
-    width: 80%;
+    width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -57,40 +57,39 @@
 }
 
 .vote-container div p {
-    color: black;
+    color: white;
     font-size: 16px;
 }
 
 .icon-post {
-    color: black;
+    color: white;
     font-size: 20px;
 }
 
 .icon-vote {
-    color: black;
+    color: white;
     font-size: 24px;
 }
 
 .post-container img {
     border-radius: 4px;
-    width: auto;
+    width: 100%;
     height: auto;
 }
 
 .post-content {
-    color: black;
+    color:white;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
 .post-image {
-    width: 80%;
+    width: 100%;
     min-height: 20px;
     height: auto;
-    max-height: 500px;
+    max-height: 1200px;
     object-fit: contain;
     margin: 0 auto;
     display: block;
-    border-radius: 5px;
 }
