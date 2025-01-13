@@ -7,6 +7,7 @@
   import 'vue3-toastify/dist/index.css';
   import {isValidDescription, isValidTitle, isValidImageType, isValidText} from "@/constants/regexTest.js";
   import Cookies from "js-cookie";
+  import "@/assets/styles/SpaceForm.css"
 
   const route = useRoute()
   const space = ref(null)
@@ -114,63 +115,36 @@
 </script>
 
 <template>
-  <div v-if="loading">
-    <VaProgressCircle indeterminate color="#262626"/>
+  <div v-if="loading" style="display: flex; justify-content: center;">
+    <VaProgressCircle indeterminate color="#fff"/>
   </div>
-  <div v-else>
+  <div v-else class="space-form-container">
     <div>
       <div v-if="loadingImage">
         <VaProgressCircle indeterminate color="#262626"/>
       </div>
-      <div v-else>
+      <div v-else class="space-image-form-container">
         <img :src="image" :alt="space.title" />
-        <button @click="openInputSelection">
+        <v-btn variant="outlined" color="white" @click="openInputSelection">
           Seleziona immagine
-        </button>
+        </v-btn>
         <input type="file" ref="inputSelection" style="display: none" @change="changeImage" accept="image/png, image/jpeg"/>
       </div>
     </div>
-    <div>
+    <div class="input-container-form-space">
       <h1>Dati Spazio</h1>
-      <label for="title">Titolo</label>
-      <input type="text" id="title" name="title" placeholder="Inserisci il titolo dello spazio" v-model="space.title">
-      <label for="argument">Argomento</label>
-      <select v-model="space.argument">
-        <option selected :value="space.argument">{{space.argument.charAt(0).toUpperCase() + space.argument.slice(1)}}</option>
-        <option value="Economia">Economia</option>
-        <option value="Matematca">Matematica</option>
-        <option value="Fisica">Fisica</option>
-        <option value="Scienze-della-terra">Scienze della terra</option>
-        <option value="Biologia">Biologia</option>
-        <option value="Geografia">Geografia</option>
-        <option value="Storia">Storia</option>
-        <option value="Giornalismo">Giornalismo</option>
-        <option value="Politica">Politica</option>
-        <option value="Sport">Sport</option>
-        <option value="Programmazione">Programmazione</option>
-        <option value="Intelligenza-artificiale">Intelligenza Artificiale</option>
-        <option value="Web-design">Web Design</option>
-        <option value="Cybersecurity">Cybersecurity</option>
-        <option value="Cloud-computing">Cloud Computing</option>
-        <option value="Data-science">Data Science</option>
-        <option value="Crypto">Crypto</option>
-        <option value="Videogiochi">Videogiochi</option>
-        <option value="Teatro">Teatro</option>
-        <option value="Chitarra">Chitarra</option>
-        <option value="Musica">Musica</option>
-        <option value="Montagna">Montagna</option>
-        <option value="Fotografia">Fotografia</option>
-        <option value="Cucina">Cucina</option>
-        <option value="Letteratura">Letteratura</option>
-        <option value="Cinema">Cinema</option>
-        <option value="Anime">Anime</option>
-        <option value="Filosofia">Filosofia</option>
-      </select>
-      <label for="description">Descrizione</label>
-      <input type="text" id="description" placeholder="Inserisci la descrizione dello spazio" v-model="space.description">
-      <button @click="handleChange">
+      <v-text-field label="Titolo" v-model="space.title" width="400px" color="white" base-color="white"></v-text-field>
+      <v-select
+          label="Argomento"
+          clearable
+          :items="['Economia', 'Matematica', 'Fisica', 'Scienze della terra', 'Biologia', 'Geografia','Storia', 'Giornalismo', 'Politica', 'Sport', 'Programmazione', 'Intelligenza Artificiale', 'Web Design', 'Cybersecurity', 'Cloud Computing', 'Data Science', 'Crypto', 'Videogiochi', 'Teatro', 'Chitarra', 'Musica', 'Montagna',  'Fotografia', 'Cucina', 'Letteratura', 'Cinema', 'Anime', 'Filosofia']"
+          variant="outlined"
+          v-model="space.argument"
+      ></v-select>
+      <v-textarea label="Descrizione dello spazio" row-height="25" rows="5" variant="outlined" auto-grow shaped width="400px" v-model="space.description"></v-textarea>
+      <v-btn color="white" variant="outlined" @click="handleChange">
         Salva Modifiche
-      </button>
+      </v-btn>
     </div>
   </div>
 </template>

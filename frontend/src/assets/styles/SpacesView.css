@@ -4,6 +4,7 @@
     gap: 1em;
     width: 100%;
     align-items: center;
+    margin-top: 1em;
 }
 
 .spaces-container h1 {
@@ -25,4 +26,12 @@
     flex-direction: row;
     align-items: center;
     gap: 1em;
+}
+
+.v-card-title {
+    color: white;
+}
+
+.v-card-subtitle, .arrow-icon-space-card, .v-card-text, .v-divider {
+    color: white;
 }

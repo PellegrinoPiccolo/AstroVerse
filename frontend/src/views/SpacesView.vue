@@ -66,7 +66,7 @@
   <div class="spaces-container" v-if="spaces">
     <h1>Naviga gli spazi di AstroVerse:</h1>
     <div class="spaces-card-container">
-      <v-card class="mx-auto" max-width="344" v-for="space in spaces" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', maxHeight: show[space.id] ? '30em' : '19.8em'}">
+      <v-card class="mx-auto" max-width="344" v-for="space in spaces" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', maxHeight: show[space.id] ? '30em' : '19.8em', width: '220px'}" style="background: #262626">
         <v-img height="200px" :src="spacesImages[space.id]" cover v-if="spacesImages[space.id]"></v-img>
         <v-card-title>
           {{space.title}}
@@ -75,10 +75,10 @@
           {{space.argument}}
         </v-card-subtitle>
         <v-card-actions>
-          <v-btn color="#4e0a70" text="Mostra di più" @click="handleViewSpace(space.id)"></v-btn>
+          <v-btn color="white" variant="outlined" text="Mostra di più" @click="handleViewSpace(space.id)"></v-btn>
           <v-spacer></v-spacer>
           <v-btn @click="show[space.id] = !show[space.id]">
-            <FontAwesomeIcon :icon="show[space.id] ? faChevronUp : faChevronDown"/>
+            <FontAwesomeIcon :icon="show[space.id] ? faChevronUp : faChevronDown" class="arrow-icon-space-card"/>
           </v-btn>
         </v-card-actions>
           <v-expand-transition>

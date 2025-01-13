@@ -1,0 +1,35 @@
+.space-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+    align-items: center;
+    width: 80%;
+    margin: 2em auto;
+}
+
+.space-image-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+
+.space-image-form-container img {
+    width: 400px;
+    height: 300px;
+    object-fit: contain;
+}
+
+.input-container-form-space h1 {
+    text-align: center;
+}
+
+.input-container-form-space {
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-container-form-space .v-btn {
+    align-self: center;
+}

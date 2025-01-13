@@ -46,11 +46,11 @@ const {post, src} = defineProps({
     if (post.userData.id === user.id) {
       isCreator.value = true
     }
-    upVotes.value = post.votes.filter((vote) => vote.vote === true).length
-    downVotes.value = post.votes.filter((vote) => vote.vote !== true).length
     apiUrlToken.get(`/post/get-vote/${post.id}`)
         .then((response) => {
           isVoted.value = response.data.message
+          upVotes.value = post.votes.filter((vote) => vote.vote === true).length
+          downVotes.value = post.votes.filter((vote) => vote.vote !== true).length
         })
         .catch((error) => {
           console.error(error)

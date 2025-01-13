@@ -6,6 +6,7 @@
   import Cookies from "js-cookie";
   import {isNotOrNull, isValidEmail, isValidPassword, isValidText, isValidUsername} from "@/constants/regexTest.js";
   import router from "@/index.js";
+  import "@/assets/styles/User.css"
 
   const loading = ref(true)
   const user = ref(null)
@@ -93,41 +94,36 @@
   <div v-if="loading">
     <VaProgressCircle indeterminate color="#262626"/>
   </div>
-  <div v-if="user">
+  <div v-if="user" class="user-data-section-container">
     <h1>Dati Personali</h1>
-    <label for="nome">Nome</label>
-    <input type="text" id="nome" placeholder="Il tuo nome" v-model="user.nome">
-    <label for="cognome">Cognome</label>
-    <input type="text" id="cognome" placeholder="Il tuo cognome" v-model="user.cognome">
-    <label for="email">Email</label>
-    <input type="email" id="email" placeholder="La tua email" v-model="user.email">
-    <label for="username">Username</label>
-    <input type="text" id="username" placeholder="Il tuo username" v-model="user.username">
-    <div>
+    <v-text-field label="Nome" v-model="user.nome" width="400px" color="white" base-color="white"></v-text-field>
+    <v-text-field label="Cognome" v-model="user.cognome" width="400px" color="white" base-color="white"></v-text-field>
+    <v-text-field label="Username" v-model="user.username" width="400px" color="white" base-color="white"></v-text-field>
+    <v-text-field label="Email" v-model="user.email" width="400px" color="white" base-color="white"></v-text-field>
+    <div class="user-data-space-post-container">
       <div>
-        <p>Numero di spazi a cui partecipi</p>
+        <p>Numero di spazi a cui partecipi:</p>
         <p>{{user.userSpaces.length}}</p>
       </div>
       <div>
-        <p>Numero di post a cui partecipi</p>
+        <p>Numero di post creati:</p>
         <p>{{user.userPosts.length}}</p>
       </div>
     </div>
-    <div>
+    <div class="user-data-section-container">
       <h1>Cambia Password</h1>
-      <label id="oldPassword">Password Corrente</label>
-      <input type="password" id="oldPassword" placeholder="Inserisci vecchia password" v-model="passwords.oldPassword">
-      <label id="nuovaPassword">Nuova Password</label>
-      <input type="password" id="nuovaPassword" placeholder="Inserisci nuova password" v-model="passwords.newPassword">
-      <label id="confermaNuovaPassword">Conferma nuova Password</label>
-      <input type="password" placeholder="Inserisci conferma nuova password" id="confermaNuovaPassword" v-model="passwords.confirmNewPassword">
+      <v-text-field label="Password Corrente" v-model="passwords.oldPassword" width="400px" color="white" base-color="white" type="password"></v-text-field>
+      <v-text-field label="Nuova Password" v-model="passwords.newPassword" width="400px" color="white" base-color="white" type="password"></v-text-field>
+      <v-text-field label="Conferma Password" v-model="passwords.confirmNewPassword" width="400px" color="white" base-color="white" type="password"></v-text-field>
     </div>
-    <button @click="changeUserData">
+    <v-btn variant="outlined" color="white" @click="changeUserData">
       Salva
-    </button>
-    <div>
+    </v-btn>
+    <div class="logout-section">
       <p>Effettua il </p>
-      <button @click="logout">Logout</button>
+      <v-btn variant="tonal" color="red" @click="logout">
+        Logout
+      </v-btn>
     </div>
   </div>
 </template>

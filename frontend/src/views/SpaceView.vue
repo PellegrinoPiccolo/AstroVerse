@@ -1,6 +1,6 @@
 <script setup>
   import {useRoute, useRouter} from "vue-router";
-  import {ref, watchEffect} from "vue";
+  import {onMounted, ref, watchEffect} from "vue";
   import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
@@ -13,7 +13,11 @@
   import {isNotOrNull, isValidImageType, isValidPostText} from "@/constants/regexTest.js";
 
   const route = useRoute()
-  const space = ref(null)
+  const space = ref({
+    title: '',
+    description: '',
+    argument: ''
+  })
   const isSub = ref(false)
   const isAdmin = ref(false)
   const token = Cookies.get("accessToken")
@@ -30,15 +34,14 @@
   const imageCreate = ref(null)
   const newPost = ref({
     text: '',
-    argument: '',
     file: null
   })
   const inputSelection = ref(null)
   const adminData = ref(null)
 
-  watchEffect(() => {
+  onMounted(async () => {
     const id = route.params.id
-    apiUrlToken.get(`/space/view/${id}/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
+    await apiUrlToken.get(`/space/view/${id}/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
         .then((response) => {
           space.value = response.data.message
           numberOfPages.value = response.data.numberOfPages

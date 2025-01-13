@@ -18,5 +18,5 @@ export const isValidPostText = (value) => !isNotOrNull(value) && textPostRegex.t
 export const isValidImageType = (file) => {
     const validTypes = ['image/jpeg', 'image/png'];
     const maxSizeBytes = 200 * 1024 * 1024
-    return validTypes.includes(file.type) && file.size <= maxSizeBytes;
+    return file && validTypes.includes(file.type) && file.size <= maxSizeBytes;
 }
