@@ -6,6 +6,7 @@
   import 'vue3-toastify/dist/index.css';
   import {isNotOrNull, isValidEmail, isValidPassword, isValidText, isValidUsername} from "@/constants/regexTest.js";
   import Cookies from "js-cookie";
+  import "@/assets/styles/Auth.css"
 
   const current = ref('login');
   const user = ref({
@@ -95,29 +96,25 @@
   <div class="form-container">
     <div class="form" v-if="current === 'login'">
       <h1>Login</h1>
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="Inserisci email" v-model="user.email">
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Inserisci password" v-model="user.password">
-      <button @click="loginUser">Login</button>
+      <v-text-field label="Email" v-model="user.email" width="400px" color="white" base-color="white"></v-text-field>
+      <v-text-field type="password" label="Password" v-model="user.password" width="400px" color="white" base-color="white"></v-text-field>
+      <v-btn prepend-icon="astroverse-icon" variant="outlined" color="white" @click="loginUser">
+        Accedi
+      </v-btn>
+      <p class="link-container">Non hai un account? <RouterLink :to="{query: {page: 'registration'}}" class="routerLink">Registrati</RouterLink></p>
     </div>
     <div class="form" v-else>
       <h1>Registrazione</h1>
-      <label for="nome">Nome</label>
-      <input type="text" id="nome" placeholder="Inserisci nome" v-model="user.nome">
-      <label for="cognome">Cognome</label>
-      <input type="text" id="cognome" placeholder="Inserisci cognome" v-model="user.cognome">
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Inserisci username" v-model="user.username">
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="Inserisci email" v-model="user.email">
-      <label for="password"></label>
-      <input type="password" id="password" placeholder="Inserisci password" v-model="user.password">
-      <label for="conferma-password"></label>
-      <input type="password" id="conferma-password" placeholder="Conferma la password" v-model="user.confermaPassword">
-      <button @click="registrationUser">Registrazione</button>
+      <v-text-field label="Nome" v-model="user.nome" width="400px" color="white" base-color="white"></v-text-field>
+      <v-text-field label="Cognome" v-model="user.cognome" width="400px" color="white" base-color="white"></v-text-field>
+      <v-text-field label="Username" v-model="user.username" width="400px" color="white" base-color="white"></v-text-field>
+      <v-text-field label="Email" v-model="user.email" width="400px" color="white" base-color="white"></v-text-field>
+      <v-text-field type="password" label="Password" v-model="user.password" width="400px" color="white" base-color="white"></v-text-field>
+      <v-text-field type="password" label="Conferma Password" v-model="user.confermaPassword" width="400px" color="white" base-color="white"></v-text-field>
+      <v-btn prepend-icon="astroverse-icon" variant="outlined" color="white" @click="registrationUser">
+        Registrati
+      </v-btn>
+      <p class="link-container">Hai già un account? <RouterLink :to="{query: {page: 'login'}}" class="routerLink">Accedi</RouterLink></p>
     </div>
-    <p v-if="current === 'login'">Non hai un account? <RouterLink :to="{query: {page: 'registration'}}">Registrati</RouterLink></p>
-    <p v-else>Hai già un account? <RouterLink :to="{query: {page: 'login'}}">Login</RouterLink></p>
   </div>
 </template>

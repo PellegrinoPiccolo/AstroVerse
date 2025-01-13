@@ -2,8 +2,9 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', serif;
-    min-height: 140vh;
+    min-height: 100vh;
     position: relative;
+    background-color: #262626;
 }
 
 nav {
@@ -14,7 +15,7 @@ nav {
     width: 100%;
     box-sizing: border-box;
     padding: 1em 2em;
-    background-color: #262626;
+    background-color: #181818;
     justify-content: space-between;
     align-items: center;
 }
@@ -74,7 +75,7 @@ footer {
     width: 100%;
     box-sizing: border-box;
     padding: 2em 0;
-    background-color: #262626;
+    background-color: #181818;
     display: grid;
     grid-template-columns: calc(100% - 4em);
     grid-template-rows: auto auto;

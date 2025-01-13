@@ -7,7 +7,7 @@
   import Cookies from "js-cookie";
   import {jwtDecode} from "jwt-decode";
   import Post from "@/components/Post.vue";
-  import {faArrowLeft, faArrowRight, faX} from "@fortawesome/free-solid-svg-icons";
+  import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import "@/assets/styles/Space.css"
   import {isNotOrNull, isValidImageType, isValidPostText} from "@/constants/regexTest.js";
@@ -121,6 +121,7 @@
           }
         })
         .catch((error) => {
+          console.error("Errore nell'iscrizione allo spazio " + error)
           isSub.value = false
         })
   }
@@ -199,8 +200,8 @@
   <div class="container-space-view">
     <div class="top-space-container">
       <div class="image-space-container">
-        <div v-if="loadingImage" style="display: flex; flex-direction: column; justify-content: center;">
-          <VaProgressCircle indeterminate color="#fff" style="align-self: center"/>
+        <div v-if="loadingImage" class="loading-container">
+          <VaProgressCircle indeterminate color="#fff"/>
         </div>
         <div v-else>
           <img :src="image" :alt="space.title" />
