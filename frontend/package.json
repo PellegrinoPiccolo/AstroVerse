@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.0",
+  "version": "2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,7 +20,8 @@
     "vue": "^3.5.13",
     "vue-router": "^4.4.5",
     "vue3-toastify": "^0.2.8",
-    "vuestic-ui": "^1.10.3"
+    "vuestic-ui": "^1.10.3",
+    "vuetify": "^3.7.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

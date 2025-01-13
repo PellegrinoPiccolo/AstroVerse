@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.astroverse</groupId>
 	<artifactId>backend</artifactId>
-	<version>AstroVerse-2.0</version>
+	<version>AstroVerse - 2.0</version>
 	<name>backend</name>
 	<description>Astroverse Backend Project</description>
 	<url/>

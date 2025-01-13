@@ -43,7 +43,14 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         boolean isValid = jwtUtil.isTokenValid(token);
+        DecodedJWT decodedJWT = JwtUtil.JwtDecode(token);
         if (isValid) {
+            try {
+                userService.getUser(decodedJWT.getClaim("email").asString());
+            } catch (IllegalArgumentException e) {
+                response.put("message", "L'utente non esiste");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response); //401 non autorizzato all'accesso al token
+            }
             response.put("message", "Token valido");
             return ResponseEntity.ok(response);   //200 token valido
         } else {

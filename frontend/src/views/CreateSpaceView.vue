@@ -1,15 +1,16 @@
 <script setup>
 
-import {ref, watchEffect} from "vue";
+import {ref} from "vue";
 import {apiTokenForm} from "@/constants/ApiUrl.js";
 import {toast} from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import {useRouter} from "vue-router";
 import {isValidDescription, isValidImageType, isValidText, isValidTitle} from "@/constants/regexTest.js";
+import "@/assets/styles/SpaceForm.css"
 
 const space = ref({
     title: '',
-    argument: '',
+    argument: null,
     description: '',
     image: null
   })
@@ -66,49 +67,28 @@ const space = ref({
 </script>
 
 <template>
-  <div>
-    <img v-if="image" :src="space.image" alt="Immagine spazio"/>
-    <button @click="openSelectionImage">
-      Seleziona immagine
-    </button>
+  <div class="space-form-container">
+    <div class="space-image-form-container">
+      <img v-if="image" :src="space.image" alt="Immagine spazio"/>
+      <v-btn variant="outlined" color="white" @click="openSelectionImage">
+        Seleziona immagine
+      </v-btn>
+    </div>
     <input type="file" id="image" name="image" ref="selectionImage" style="display: none" @change="handleImage" accept="image/png, image/jpeg">
-    <label for="title">Titolo</label>
-    <input type="text" id="title" name="title" placeholder="Inserisci il titolo dello spazio" v-model="space.title">
-    <label for="argument">Argomento</label>
-    <select v-model="space.argument">
-      <option value="Economia">Economia</option>
-      <option value="Matematca">Matematica</option>
-      <option value="Fisica">Fisica</option>
-      <option value="Scienze della terra">Scienze della terra</option>
-      <option value="Biologia">Biologia</option>
-      <option value="Geografia">Geografia</option>
-      <option value="Storia">Storia</option>
-      <option value="Giornalismo">Giornalismo</option>
-      <option value="Politica">Politica</option>
-      <option value="Sport">Sport</option>
-      <option value="Programmazione">Programmazione</option>
-      <option value="Intelligenza artificiale">Intelligenza Artificiale</option>
-      <option value="Web design">Web Design</option>
-      <option value="Cybersecurity">Cybersecurity</option>
-      <option value="Cloud computing">Cloud Computing</option>
-      <option value="Data-science">Data Science</option>
-      <option value="Crypto">Crypto</option>
-      <option value="Videogiochi">Videogiochi</option>
-      <option value="Teatro">Teatro</option>
-      <option value="Chitarra">Chitarra</option>
-      <option value="Musica">Musica</option>
-      <option value="Montagna">Montagna</option>
-      <option value="Fotografia">Fotografia</option>
-      <option value="Cucina">Cucina</option>
-      <option value="Letteratura">Letteratura</option>
-      <option value="Cinema">Cinema</option>
-      <option value="Anime">Anime</option>
-      <option value="Filosofia">Filosofia</option>
-    </select>
-    <label for="description">Descrizione</label>
-    <input type="text" id="description" placeholder="Inserisci una descrizione" v-model="space.description">
-    <button @click="createSpace">
-      Crea Spazio
-    </button>
+    <div class="input-container-form-space">
+      <h1>Dati Spazio</h1>
+      <v-text-field label="Titolo" v-model="space.title" width="400px" color="white" base-color="white"></v-text-field>
+      <v-select
+          label="Argomento"
+          clearable
+          :items="['Economia', 'Matematica', 'Fisica', 'Scienze della terra', 'Biologia', 'Geografia','Storia', 'Giornalismo', 'Politica', 'Sport', 'Programmazione', 'Intelligenza Artificiale', 'Web Design', 'Cybersecurity', 'Cloud Computing', 'Data Science', 'Crypto', 'Videogiochi', 'Teatro', 'Chitarra', 'Musica', 'Montagna',  'Fotografia', 'Cucina', 'Letteratura', 'Cinema', 'Anime', 'Filosofia']"
+          variant="outlined"
+          v-model="space.argument"
+      ></v-select>
+      <v-textarea label="Descrizione dello spazio" row-height="25" rows="5" variant="outlined" auto-grow shaped width="400px" v-model="space.description"></v-textarea>
+      <v-btn color="white" variant="outlined" @click="createSpace">
+        Crea Spazio
+      </v-btn>
+    </div>
   </div>
 </template>

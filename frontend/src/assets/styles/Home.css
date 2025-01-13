@@ -1,0 +1,85 @@
+.home-container {
+   width: 80%;
+   margin: 0 10% 0 10%;
+   display: grid;
+   grid-template-columns: 25% 65%;
+   gap: 10%;
+   box-sizing: border-box;
+   justify-content: space-between;
+}
+
+.home-container .home-left-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    overflow-y: auto;
+    position: sticky;
+    top: 120px;
+    align-self: flex-start;
+    max-height: 80vh;
+    gap: .8em;
+    padding: 2em 0;
+    margin-bottom: 10px;
+}
+
+.loading-bar-home {
+    align-self: center;
+}
+
+.button-create-space {
+    width: 100%;
+}
+
+.button-create-space button {
+    width: 100%;
+    color: white;
+    padding: .4em .8em;
+    background-color: #4e0a70;
+    font-size: 18px;
+}
+
+.space-card-container {
+    display: grid;
+    grid-template-columns: 100px calc(100% - 100px);
+    align-items: center;
+    gap: .4em;
+    text-decoration: none;
+    width: calc(100% - .4em);
+}
+
+.space-card-container div {
+    width: 100%;
+    height: 70px;
+}
+
+.space-card-container div img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.space-card-container p {
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    margin: 0;
+}
+
+.home-right-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1.5em 0;
+    gap: 3em
+}
+
+.arrow-post-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}

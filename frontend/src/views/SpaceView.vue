@@ -1,19 +1,23 @@
 <script setup>
   import {useRoute, useRouter} from "vue-router";
-  import {ref, watchEffect} from "vue";
+  import {onMounted, ref, watchEffect} from "vue";
   import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
   import Cookies from "js-cookie";
   import {jwtDecode} from "jwt-decode";
   import Post from "@/components/Post.vue";
-  import {faArrowLeft, faArrowRight, faX} from "@fortawesome/free-solid-svg-icons";
+  import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import "@/assets/styles/Space.css"
   import {isNotOrNull, isValidImageType, isValidPostText} from "@/constants/regexTest.js";
 
   const route = useRoute()
-  const space = ref(null)
+  const space = ref({
+    title: '',
+    description: '',
+    argument: ''
+  })
   const isSub = ref(false)
   const isAdmin = ref(false)
   const token = Cookies.get("accessToken")
@@ -30,20 +34,20 @@
   const imageCreate = ref(null)
   const newPost = ref({
     text: '',
-    argument: '',
     file: null
   })
   const inputSelection = ref(null)
+  const adminData = ref(null)
 
-  watchEffect(() => {
+  onMounted(async () => {
     const id = route.params.id
-    apiUrlToken.get(`/space/view/${id}/${pageRef.value}`)
+    await apiUrlToken.get(`/space/view/${id}/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
         .then((response) => {
           space.value = response.data.message
           numberOfPages.value = response.data.numberOfPages
           if (route.query.page < 1) {
             router.push("?page=1")
-            pageRef.value = route.query.page
+            pageRef.value = 1
           } else if(route.query.page > numberOfPages.value) {
             router.push(`?page=${numberOfPages.value}`)
             pageRef.value = numberOfPages.value
@@ -52,12 +56,13 @@
           users.value = userData
           posts.value = response.data.posts
           const actualUser = jwtDecode(token)
+          adminData.value = response.data.admin
           userData.map((user) => {
             if (user.id === actualUser.id) {
               isSub.value = true
             }
           })
-          if (response.data.idAdmin === actualUser.id) {
+          if (response.data.admin.id === actualUser.id) {
             isAdmin.value = true
           }
           loading.value = false
@@ -112,7 +117,7 @@
     apiTokenForm.post('/space/subscribe', body)
         .then((response) => {
           isSub.value = !isSub.value
-          toast.success(response.data.message)
+          toast.success(response.data.mezzssage)
           const actualUser = jwtDecode(token);
           if (isSub.value) {
             users.value.push(actualUser)
@@ -121,6 +126,7 @@
           }
         })
         .catch((error) => {
+          console.error("Errore nell'iscrizione allo spazio " + error)
           isSub.value = false
         })
   }
@@ -184,71 +190,98 @@
           toast.error("Errore nella creazione del post")
         })
   }
+
+  const handleCloseModal = () => {
+    imageCreate.value = null
+    newPost.value = {
+      text: '',
+      argument: '',
+      file: null
+    }
+  }
 </script>
 
 <template>
   <div class="container-space-view">
     <div class="top-space-container">
-      <div class="image-space-container">
-        <div v-if="loadingImage" style="display: flex; flex-direction: column; justify-content: center;">
-          <VaProgressCircle indeterminate color="#fff" style="align-self: center"/>
+      <div class="space-info-container">
+        <div class="image-space-container">
+          <div v-if="loadingImage" class="loading-container">
+            <VaProgressCircle indeterminate color="#fff"/>
+          </div>
+          <div v-else>
+            <img :src="image" :alt="space.title" />
+          </div>
         </div>
-        <div v-else>
-          <img :src="image" :alt="space.title" />
+        <div v-if="loading">
+          <VaProgressCircle indeterminate color="#262626"/>
+        </div>
+        <div v-else class="content-top-section">
+          <div class="text-top-section">
+            <h1>{{space.title}}</h1>
+            <div class="argument-section">
+              <h2>Argomento</h2>
+              <p>{{space.argument}}</p>
+            </div>
+          </div>
+          <div class="right-top-section">
+            <p>{{adminData.username}}</p>
+            <RouterLink :to="`${space.id}/users`" class="link-number-of-user">Numero di utenti: {{users.length}}</RouterLink>
+            <div class="button-section">
+              <v-btn variant="outlined" color="white" v-if="isAdmin" @click="router.push(`/astroverse/space/modify/${space.id}`)">
+                Modifica spazio
+              </v-btn>
+              <v-btn variant="outlined" color="white" v-if="isSub" @click="isOpen = true">
+                Crea Post
+              </v-btn>
+              <v-btn variant="outlined" color="black" @click="handleSubmit" v-if="isSub && !isAdmin">
+                Disiscriviti
+              </v-btn>
+              <v-btn variant="outlined" color="black" @click="handleSubmit" v-else-if="!isSub && !isAdmin">
+                Iscriviti
+              </v-btn>
+            </div>
+          </div>
         </div>
       </div>
-      <div v-if="loading">
-        <VaProgressCircle indeterminate color="#262626"/>
-      </div>
-      <div v-else>
-        <h1>{{space.title}}</h1>
-        <p class="description-space">{{space.description}}</p>
-        <div class="argument-section">
-          <h2>Argomento</h2>
-          <p>{{space.argument}}</p>
-        </div>
-        <div class="button-section">
-          <button v-if="isAdmin" @click="router.push(`/astroverse/space/modify/${space.id}`)">
-            Modifica spazio
-          </button>
-          <button v-if="isSub" @click="isOpen = true">
-            Crea Post
-          </button>
-          <RouterLink :to="`${space.id}/users`">Numero di utenti: {{users.length}}</RouterLink>
-          <button v-if="isSub && !isAdmin" @click="handleSubmit">
-            Disiscriviti
-          </button>
-          <button v-else-if="!isSub && !isAdmin" @click="handleSubmit">
-            Iscriviti
-          </button>
-        </div>
+      <div class="space-description-container">
+        <h2>Descrizione</h2>
+        <p class="space-description">{{space.description}}</p>
       </div>
     </div>
     <div>
-      <div v-if="posts !== null && posts.length > 0">
+      <div v-if="posts !== null && posts.length > 0" class="post-container-space">
         <h2>Post</h2>
-        <div v-for="post in posts" :key="post.id">
-          <Post :post="post" :src="postImages[post.id]" />
+        <div v-for="post in posts" :key="post.id" style="width: 100%;">
+          <Post :post="post" :src="postImages[post.id]"/>
         </div>
       </div>
     </div>
   </div>
   <div v-if="numberOfPages > 1">
-    <button @click="handleChange(pageRef - 1)">
+    <v-btn variant="outlined" color="black" @click="handleChange(pageRef - 1)">
       <FontAwesomeIcon :icon="faArrowLeft" />
-    </button>
-    <button @click="handleChange(pageRef + 1)">
+    </v-btn>
+    <v-btn variant="outlined" color="black" @click="handleChange(pageRef + 1)">
       <FontAwesomeIcon :icon="faArrowRight" />
-    </button>
+    </v-btn>
   </div>
-  <VaModal v-model="isOpen" ok-text="Salva post" cancel-text="Annulla" @ok="handleCreatePost">
-    <div>
-      <h1>Crea il tuo post:</h1>
-      <img v-if="imageCreate" :src="imageCreate" alt="Immagine post"/>
-      <button @click="openSelectionImage">Seleziona un immagine per il tuo post</button>
-      <input type="file" ref="inputSelection" style="display: none" @change="changeImage" accept="image/png, image/jpeg"/>
-      <label for="text">Testo del post</label>
-      <input type="text" id="text" name="text" placeholder="Inserisci il testo per questo post" v-model="newPost.text">
-    </div>
+  <VaModal v-model="isOpen" ok-text="Salva post" cancel-text="Annulla" @ok="handleCreatePost" @cancel="handleCloseModal" class="modal">
+    <h1>Crea il tuo post:</h1>
+    <img v-if="imageCreate" :src="imageCreate" alt="Immagine post"/>
+    <v-btn variant="outlined" color="black" @click="openSelectionImage">
+      Seleziona un immagine per il tuo post
+    </v-btn>
+    <input type="file" ref="inputSelection" style="display: none" @change="changeImage" accept="image/png, image/jpeg"/>
+    <v-textarea
+        label="Testo del post"
+        row-height="25"
+        rows="5"
+        variant="outlined"
+        auto-grow
+        shaped
+        width="400px"
+        v-model="newPost.text"
+    ></v-textarea>
   </VaModal>
 </template>

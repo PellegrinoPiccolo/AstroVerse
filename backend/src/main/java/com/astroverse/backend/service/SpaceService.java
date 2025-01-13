@@ -57,9 +57,8 @@ public class SpaceService {
         return users;
     }
 
-    public Long getAdmin(Space space) {
-        UserSpace userSpace = userSpaceRepository.findFirstBySpaceAndIsSpaceAdmin(space, true);
-        return userSpace.getUserId();
+    public UserSpace getAdmin(Space space) {
+        return userSpaceRepository.findFirstBySpaceAndIsSpaceAdmin(space, true);
     }
     
     public Page<Post> getPost(Space space, int limit, int offset) {

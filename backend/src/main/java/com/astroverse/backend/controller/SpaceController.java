@@ -111,7 +111,8 @@ public class SpaceController {
             List<User> users = spaceService.getUsersBySpace(space);
             response.put("message", space);
             response.put("users", users);
-            response.put("idAdmin", spaceService.getAdmin(space));
+            UserSpace userSpace = spaceService.getAdmin(space);
+            response.put("admin", userSpace.getUser());
             Page<Post> posts = spaceService.getPost(space, limit, offset);
             List<Post> postList = posts.getContent().stream().toList();
             for (Post post : posts) {
@@ -249,7 +250,7 @@ public class SpaceController {
         Optional<Space> space = spaceService.getSpace(id);
         if (space.isPresent()) {
             double totalNumberOfUsers = userSpaceService.getNumberOfUsers(space.get());
-            int numberOfPages = (int) Math.ceil(totalNumberOfUsers/limit);
+            long numberOfPages = (int) Math.ceil(totalNumberOfUsers/limit);
             Page<UserSpace> users = userSpaceService.getAllUserBySpace(space.get(), limit, offset);
             List<String> usersUsername = users.getContent().stream().map(user -> user.getUser().getUsername()).toList();
             response.put("users", usersUsername);
@@ -262,13 +263,14 @@ public class SpaceController {
     }
 
     @GetMapping("/get-all-spaces/{page}")
-    public ResponseEntity<?> getAllSpaces(@PathVariable int page){
+    public ResponseEntity<?> getAllSpaces(@PathVariable int page) {
         Map<String, Object> response = new HashMap<>();
-        int limit = 30;
+        int limit = 40;
         int offset = (page-1)*limit;
         Page<Space> spaces = spaceService.getAllSpaces(limit, offset);
         List<Space> spaceList = spaces.getContent().stream().toList();
-        long numberOfPages = spaceService.getNumberOfSpaces();
+        long numberOfSpaces = spaceService.getNumberOfSpaces();
+        long numberOfPages = (long) Math.ceil((double) numberOfSpaces /limit);
         response.put("spaces", spaceList);
         response.put("numberOfPages", numberOfPages);
         return ResponseEntity.ok(response);
