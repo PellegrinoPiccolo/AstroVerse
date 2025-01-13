@@ -17,11 +17,11 @@ const checkUser = async () => {
     return false
   }
   try {
-    await apiUrlToken.post('/auth/validate-token');
-    return true;
+    await apiUrlToken.post('/auth/validate-token')
+    return true
   } catch (error) {
-    console.log(error.message);
-    return false;
+    console.log(error)
+    return false
   }
 }
 
@@ -37,22 +37,21 @@ const router = createRouter({
       path: '/astroverse',
       name: 'home',
       component: Nav,
-      beforeEnter: checkUser,
       children: [
         {
           path: '',
           name: 'HomeView',
-          component: HomeView
+          component: HomeView,
         },
         {
           path: 'user',
           name: 'UserView',
-          component: UserView
+          component: UserView,
         },
         {
           path: 'create/space',
           name: 'CreateSpaceView',
-          component: CreateSpaceView
+          component: CreateSpaceView,
         },
         {
           path: 'space/:id',
@@ -62,17 +61,17 @@ const router = createRouter({
         {
           path: 'space/:id/users',
           name: 'UsersSpaceView',
-          component: UsersSpaceView
+          component: UsersSpaceView,
         },
         {
           path: 'space/modify/:id',
           name: 'SpaceModifyView',
-          component: SpaceModifyView
+          component: SpaceModifyView,
         },
         {
           path: 'spaces',
           name: 'SpacesView',
-          component: SpacesView
+          component: SpacesView,
         }
       ]
     },
@@ -86,15 +85,23 @@ const router = createRouter({
   },
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeResolve(async (to, from, next) => {
   const isValid = await checkUser()
-  if (to.name === 'AuthView' && isValid) {
-    next({name: 'HomeView'})
-  } else if (to.name !== 'AuthView' && !isValid) {
-    next({name: 'AuthView'});
+  if(to.name === 'AuthView') {
+    if(isValid) {
+      next({name: 'HomeView'})
+    } else {
+      next()
+    }
   } else {
-    next();
+    if(isValid) {
+      next()
+    } else {
+      next({name: 'AuthView'})
+    }
   }
 })
+
+
 
 export default router;
