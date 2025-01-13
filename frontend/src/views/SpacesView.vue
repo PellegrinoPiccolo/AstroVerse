@@ -3,6 +3,9 @@
   import {apiUrlToken} from "@/constants/ApiUrl.js";
   import {useRoute, useRouter} from "vue-router";
   import {toast} from "vue3-toastify";
+  import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+  import {faArrowLeft, faArrowRight, faChevronDown, faChevronUp} from "@fortawesome/free-solid-svg-icons";
+  import "@/assets/styles/SpacesView.css"
 
   const spaces = ref(null)
   const route = useRoute()
@@ -10,21 +13,23 @@
   const numberOfPages = ref(0)
   const pageRef = ref((route.query.page && route.query.page > 0 && route.query.page !== '') ? route.query.page : 1)
   const spacesImages = ref({})
+  const show = ref({})
 
   watchEffect(() => {
-    apiUrlToken.get(`/space/get-all-spaces/${pageRef.value}`)
+    apiUrlToken.get(`/space/get-all-spaces/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
         .then((response) => {
           spaces.value = response.data.spaces
           numberOfPages.value = response.data.numberOfPages
           if (route.query.page < 1) {
             router.push("?page=1")
-            pageRef.value = route.query.page
+            pageRef.value = 1
           } else if(route.query.page > numberOfPages.value) {
             router.push(`?page=${numberOfPages.value}`)
             pageRef.value = numberOfPages.value
           }
           spaces.value = spaces.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           spaces.value.map((space) => {
+            show.value[space.id] = false
             const splits = space.image.split("\\")
             const imageName = splits[2]
             apiUrlToken.get(`/images/space/${space.id}/${imageName}`, {
@@ -46,14 +51,53 @@
           toast.error("Errore nella visualizzazione degli spazi")
         })
   })
+
+  const handleViewSpace = (id) => {
+    router.push(`/astroverse/space/${id}`)
+  }
+
+  const handleChangePage = (page) => {
+    router.push(`?page=${page}`)
+    pageRef.value = page
+  }
 </script>
 
 <template>
-  <div class="space-container" v-if="spaces">
+  <div class="spaces-container" v-if="spaces">
     <h1>Naviga gli spazi di AstroVerse:</h1>
-    <RouterLink :to="`/astroverse/space/${space.id}`" v-for="space in spaces">
-      <img :src="spacesImages[space.id]" v-if="spacesImages[space.id]" :alt="space.title"/>
-      <p>{{space.title}}</p>
-    </RouterLink>
+    <div class="spaces-card-container">
+      <v-card class="mx-auto" max-width="344" v-for="space in spaces" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', maxHeight: show[space.id] ? '30em' : '19.8em'}">
+        <v-img height="200px" :src="spacesImages[space.id]" cover v-if="spacesImages[space.id]"></v-img>
+        <v-card-title>
+          {{space.title}}
+        </v-card-title>
+        <v-card-subtitle>
+          {{space.argument}}
+        </v-card-subtitle>
+        <v-card-actions>
+          <v-btn color="#4e0a70" text="Mostra di più" @click="handleViewSpace(space.id)"></v-btn>
+          <v-spacer></v-spacer>
+          <v-btn @click="show[space.id] = !show[space.id]">
+            <FontAwesomeIcon :icon="show[space.id] ? faChevronUp : faChevronDown"/>
+          </v-btn>
+        </v-card-actions>
+          <v-expand-transition>
+            <div v-if="show[space.id]">
+              <v-divider></v-divider>
+              <v-card-text>
+                {{space.description}}
+              </v-card-text>
+            </div>
+          </v-expand-transition>
+      </v-card>
+    </div>
+    <div v-if="numberOfPages > 1" class="arrow-spaces-view-container">
+      <v-btn variant="outlined" color="white" @click="handleChangePage(Number(pageRef) - 1)">
+        <FontAwesomeIcon :icon="faArrowLeft" />
+      </v-btn>
+      <v-btn variant="outlined" color="white" @click="handleChangePage(Number(pageRef) + 1)">
+        <FontAwesomeIcon :icon="faArrowRight" />
+      </v-btn>
+    </div>
   </div>
 </template>

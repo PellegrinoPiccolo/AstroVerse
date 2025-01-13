@@ -1,0 +1,34 @@
+.user-data-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 2em 0;
+}
+
+.arrow-section-user-view {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+}
+
+.users-view-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2em
+}
+
+.users-container {
+    font-family: Roboto, serif;
+    font-weight: bold;
+    background-color: cadetblue;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    border-radius: 10px;
+    padding: .4em .8em;
+}

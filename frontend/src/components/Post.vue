@@ -1,5 +1,5 @@
 <script setup>
-import {defineProps, onMounted, ref} from "vue";
+  import {defineProps, onMounted, ref} from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {faChevronDown, faChevronUp, faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons";
   import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
@@ -9,6 +9,7 @@ import {defineProps, onMounted, ref} from "vue";
   import {jwtDecode} from "jwt-decode";
   import {isValidImageType, isValidPostText} from "@/constants/regexTest.js";
   import "@/assets/styles/Post.css";
+  import "@/assets/styles/Modal.css"
 
 
 const {post, src} = defineProps({
@@ -134,51 +135,61 @@ const {post, src} = defineProps({
     localPost.value.image = ''
     imageDeleted.value = true
   }
+
+  const handleCloseModal = () => {
+    localPost.value.image = undefined
+    localPost.value.testo = post.testo
+  }
 </script>
 
 <template>
-  <div class="post-container">
-    <div class="text-container-post">
-      <div class="top-post-section">
-        <div class="user-data-container-post">
-          <p>{{post.userData.nome + " " + post.userData.cognome}}</p>
-          <p>{{post.userData.username}}</p>
-        </div>
-        <button @click="isOpen = true" v-if="isCreator">
-          <FontAwesomeIcon :icon="faPenToSquare" class="icon-post"/>
-        </button>
-      </div>
-      <p>{{post.testo}}</p>
-    </div>
-    <img v-if="(srcRef !== null && srcRef !== undefined) ? (srcRef !== '' ? srcRef : false) : src" :src="srcRef ? srcRef : src" :alt="post.testo">
-    <div class="vote-container">
+  <VaCard :style="`background-color: #4e0a70; padding:${(srcRef || src) ? '2em 0 0 0' : '0'}`">
+    <img class="post-image" v-if="(srcRef !== null && srcRef !== undefined) ? (srcRef !== '' ? srcRef : false) : src" :src="srcRef ? srcRef : src" :alt="post.testo">
+    <VaCardTitle class="post-content">
+      <p>{{post.userData.username}}</p>
+      <button @click="isOpen = true" v-if="isCreator">
+        <FontAwesomeIcon :icon="faPenToSquare" class="icon-post"/>
+      </button>
+    </VaCardTitle>
+    <VaCardContent class="post-content">
+      {{post.testo}}
+    </VaCardContent>
+    <VaCardContent class="vote-container">
       <div>
         <button @click="vote(true)">
-          <FontAwesomeIcon :icon="faChevronUp" class="icon-vote" :style="{color: isVoted !== null && isVoted === true ? '#a285ff' : 'white'}"></FontAwesomeIcon>
+          <FontAwesomeIcon :icon="faChevronUp" class="icon-vote" :style="{color: isVoted !== null && isVoted === true ? '#429172' : 'white'}"></FontAwesomeIcon>
         </button>
         <p>{{upVotes}}</p>
       </div>
       <div>
         <button @click="vote(false)">
-          <FontAwesomeIcon :icon="faChevronDown" class="icon-vote" :style="{color: isVoted !== null && isVoted === false ? '#a285ff' : 'white'}"></FontAwesomeIcon>
+          <FontAwesomeIcon :icon="faChevronDown" class="icon-vote" :style="{color: isVoted !== null && isVoted === false ? 'red' : 'white'}"></FontAwesomeIcon>
         </button>
         <p>{{downVotes}}</p>
       </div>
-    </div>
-  </div>
-  <VaModal v-model="isOpen" ok-text="Salva modifiche" cancel-text="Annulla" @ok="handleChangePost">
+    </VaCardContent>
+  </VaCard>
+  <VaModal v-model="isOpen" ok-text="Salva modifiche" cancel-text="Annulla" @ok="handleChangePost" class="modal" @cancel="handleCloseModal">
     <h1>Modifica il tuo post:</h1>
-    <div>
-      <button @click="cancelImage">
+    <div class="image-section">
+      <button @click="cancelImage" class="close-icon" >
         <FontAwesomeIcon :icon="faX"/>
       </button>
       <img :src="(localPost.image !== null && localPost.image !== undefined) ? localPost.image : src" :alt="post.testo" v-if="(localPost.image === null || localPost.image === undefined) ? src : (localPost.image !== '' ? localPost.image : false)">
-      <button @click="openInputSelection">
-        Seleziona immagine
-      </button>
+      <v-btn variant="outlined" color="black" @click="openInputSelection">
+        Seleziona un immagine per il tuo post
+      </v-btn>
     </div>
     <input type="file" ref="inputSelection" style="display: none" @change="changeImage" accept="image/png, image/jpeg"/>
-    <label for="testo">Testo del post</label>
-    <input type="text" id="testo" name="testo" placeholder="Inserisci il testo per questo post" v-model="localPost.testo">
+    <v-textarea
+        label="Testo del post"
+        row-height="25"
+        rows="5"
+        variant="outlined"
+        auto-grow
+        shaped
+        width="400px"
+        v-model="localPost.testo"
+    ></v-textarea>
   </VaModal>
 </template>

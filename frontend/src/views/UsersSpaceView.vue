@@ -3,9 +3,10 @@
   import {ref, watchEffect} from "vue";
   import {apiTokenForm} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
-  import 'vue3-toastify/dist/index.css';
+  import "vue3-toastify/dist/index.css";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {faArrowLeft, faArrowRight} from "@fortawesome/free-solid-svg-icons";
+  import "@/assets/styles/UsersView.css"
 
   const route = useRoute()
   const router = useRouter()
@@ -53,20 +54,22 @@
 </script>
 
 <template>
-  <div v-if="loading">
-    <VaProgressCircle indeterminate color="#262626"/>
-  </div>
-  <div class="user-container" v-for="user in users" v-else>
-    <p>{{user}}</p>
-  </div>
-  <div class="page-container">
-    <div v-if="numberOfPages > 1">
-      <button @click="handleChange(pageRef - 1)">
+  <div class="users-view-container">
+    <div class="user-data-container">
+      <div v-if="loading">
+        <VaProgressCircle indeterminate color="#262626"/>
+      </div>
+      <div class="users-container" v-for="user in users" v-else>
+        <p>{{user}}</p>
+      </div>
+    </div>
+    <div class="arrow-section-user-view" v-if="numberOfPages > 1">
+      <v-btn variant="outlined" color="white" @click="handleChange(pageRef - 1)">
         <FontAwesomeIcon :icon="faArrowLeft" />
-      </button>
-      <button @click="handleChange(pageRef + 1)">
+      </v-btn>
+      <v-btn variant="outlined" color="white" @click="handleChange(pageRef + 1)">
         <FontAwesomeIcon :icon="faArrowRight" />
-      </button>
+      </v-btn>
     </div>
   </div>
 </template>

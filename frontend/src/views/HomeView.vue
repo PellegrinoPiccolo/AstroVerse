@@ -55,13 +55,14 @@
   })
 
   watchEffect(() => {
-    apiUrlToken.get(`/post/get-posts/${pageRef.value}`)
+    apiUrlToken.get(`/post/get-posts/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
         .then((response) => {
           posts.value = response.data.posts
+          posts.value = posts.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           numberOfPages.value = response.data.numberOfPages
           if (route.query.page < 1) {
             router.push("?page=1")
-            pageRef.value = route.query.page
+            pageRef.value = 1
           } else if (route.query.page > numberOfPages.value) {
             router.push(`?page=${numberOfPages.value}`)
             pageRef.value = numberOfPages.value

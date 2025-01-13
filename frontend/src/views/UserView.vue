@@ -1,6 +1,6 @@
 <script setup>
   import {onMounted, ref} from "vue";
-  import {apiTokenForm, apiTokenJson, apiUrlToken} from "@/constants/ApiUrl.js";
+  import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
   import {toast} from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
   import Cookies from "js-cookie";

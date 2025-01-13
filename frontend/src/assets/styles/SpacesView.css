@@ -1,0 +1,28 @@
+.spaces-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    width: 100%;
+    align-items: center;
+}
+
+.spaces-container h1 {
+    color: white;
+    text-align: center;
+}
+
+.spaces-card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
+    gap: 1em;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 2em;
+}
+
+.arrow-spaces-view-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+}
