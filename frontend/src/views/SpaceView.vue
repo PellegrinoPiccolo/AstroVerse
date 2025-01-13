@@ -184,6 +184,15 @@
           toast.error("Errore nella creazione del post")
         })
   }
+
+  const handleCloseModal = () => {
+    imageCreate.value = null
+    newPost.value = {
+      text: '',
+      argument: '',
+      file: null
+    }
+  }
 </script>
 
 <template>
@@ -241,7 +250,7 @@
       <FontAwesomeIcon :icon="faArrowRight" />
     </button>
   </div>
-  <VaModal v-model="isOpen" ok-text="Salva post" cancel-text="Annulla" @ok="handleCreatePost">
+  <VaModal v-model="isOpen" ok-text="Salva post" cancel-text="Annulla" @ok="handleCreatePost" @cancel="handleCloseModal">
     <div>
       <h1>Crea il tuo post:</h1>
       <img v-if="imageCreate" :src="imageCreate" alt="Immagine post"/>
