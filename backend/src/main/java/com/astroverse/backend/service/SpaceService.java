@@ -45,7 +45,7 @@ public class SpaceService {
     }
 
     public List<Space> searchSpace(String search) {
-        return spaceRepository.findByTitleContainingIgnoreCaseOrArgumentContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, search);
+        return spaceRepository.findByTitleContainingOrArgumentContainingOrDescriptionContaining(search.toLowerCase(), search.toLowerCase(), search.toLowerCase());
     }
 
     public List<User> getUsersBySpace(Space space) {

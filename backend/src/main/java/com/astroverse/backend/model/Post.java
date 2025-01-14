@@ -20,6 +20,8 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String testo;
     private String file;
     private long spaceId;

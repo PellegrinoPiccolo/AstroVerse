@@ -19,9 +19,13 @@ public class Space {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Lob
+    @Column(name = "title", columnDefinition = "TEXT")
     private String title;
     private String argument;
     private String image;
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
     @OneToMany(mappedBy = "space", cascade = CascadeType.ALL)
     @JsonIgnore

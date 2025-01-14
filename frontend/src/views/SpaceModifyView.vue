@@ -35,7 +35,7 @@
               isSub.value = true
             }
           })
-          if (response.data.idAdmin === actualUser.id) {
+          if (response.data.admin.id === actualUser.id) {
             isAdmin.value = true
           }
           loading.value = false

@@ -66,7 +66,7 @@
   <div class="spaces-container" v-if="spaces">
     <h1>Naviga gli spazi di AstroVerse:</h1>
     <div class="spaces-card-container">
-      <v-card class="mx-auto" max-width="344" v-for="space in spaces" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', maxHeight: show[space.id] ? '30em' : '19.8em', width: '220px'}" style="background: #262626">
+      <v-card class="mx-auto" max-width="344" v-for="space in spaces" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', height: show[space.id] ? 'auto' : '19.8em', width: '220px'}" style="background: #262626">
         <v-img height="200px" :src="spacesImages[space.id]" cover v-if="spacesImages[space.id]"></v-img>
         <v-card-title>
           {{space.title}}
@@ -85,7 +85,7 @@
             <div v-if="show[space.id]">
               <v-divider></v-divider>
               <v-card-text>
-                {{space.description}}
+                {{space.description.length > 180 ? space.description.slice(0, 180) + '...' : space.description}}
               </v-card-text>
             </div>
           </v-expand-transition>

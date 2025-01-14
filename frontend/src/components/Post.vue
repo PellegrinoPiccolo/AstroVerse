@@ -1,5 +1,5 @@
 <script setup>
-  import {defineProps, onMounted, ref} from "vue";
+import {defineProps, onMounted, ref, watchEffect} from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {faChevronDown, faChevronUp, faPenToSquare, faX} from "@fortawesome/free-solid-svg-icons";
   import {apiTokenForm, apiUrlToken} from "@/constants/ApiUrl.js";
@@ -46,15 +46,23 @@ const {post, src} = defineProps({
     if (post.userData.id === user.id) {
       isCreator.value = true
     }
+    upVotes.value = post.votes.filter((vote) => vote.vote === true).length
+    downVotes.value = post.votes.filter((vote) => vote.vote !== true).length
     apiUrlToken.get(`/post/get-vote/${post.id}`)
         .then((response) => {
           isVoted.value = response.data.message
-          upVotes.value = post.votes.filter((vote) => vote.vote === true).length
-          downVotes.value = post.votes.filter((vote) => vote.vote !== true).length
         })
         .catch((error) => {
           console.error(error)
         })
+  })
+
+  watchEffect(() => {
+    const token = Cookies.get("accessToken")
+    const user = jwtDecode(token)
+    if (post.userData.id === user.id) {
+      isCreator.value = true
+    }
   })
 
   const vote = (voteType) => {
