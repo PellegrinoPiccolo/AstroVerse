@@ -117,7 +117,7 @@
     apiTokenForm.post('/space/subscribe', body)
         .then((response) => {
           isSub.value = !isSub.value
-          toast.success(response.data.mezzssage)
+          toast.success(response.data.message)
           const actualUser = jwtDecode(token);
           if (isSub.value) {
             users.value.push(actualUser)
@@ -172,12 +172,14 @@
             file: response.data.newPost.file,
             userData: jwtDecode(token),
             id: response.data.newPost.id,
-            createdAt: response.data.newPost.createdAt
+            createdAt: response.data.newPost.createdAt,
+            votes: []
           });
           posts.value = posts.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           if (imageCreate.value !== null) {
             postImages.value[response.data.newPost.id] = imageCreate.value;
           }
+          imageCreate.value = null
           newPost.value = {
             text: '',
             argument: '',
@@ -234,10 +236,10 @@
               <v-btn variant="outlined" color="white" v-if="isSub" @click="isOpen = true">
                 Crea Post
               </v-btn>
-              <v-btn variant="outlined" color="black" @click="handleSubmit" v-if="isSub && !isAdmin">
+              <v-btn variant="outlined" color="white" @click="handleSubmit" v-if="isSub && !isAdmin">
                 Disiscriviti
               </v-btn>
-              <v-btn variant="outlined" color="black" @click="handleSubmit" v-else-if="!isSub && !isAdmin">
+              <v-btn variant="outlined" color="white" @click="handleSubmit" v-else-if="!isSub && !isAdmin">
                 Iscriviti
               </v-btn>
             </div>

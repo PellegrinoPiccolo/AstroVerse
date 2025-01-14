@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
-    private static final String testoRegex = "^[\\w\\s\\p{Punct}]{1,400}$";
+    private static final String testoRegex = "^[\\w\\s\\p{P}àèéìòùÀÈÉÌÒÙ]{1,10000}$";
     private final PostService postService;
     private final VoteService voteService;
     private static final String directory = "uploads-post/";
