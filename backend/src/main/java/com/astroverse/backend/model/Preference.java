@@ -21,4 +21,9 @@ public class Preference {
     @JsonBackReference
     private User user;
     private String argument;
+
+    public Preference(User user, String argument) {
+        this.user = user;
+        this.argument = argument;
+    }
 }

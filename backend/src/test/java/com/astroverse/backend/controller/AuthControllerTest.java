@@ -3,9 +3,11 @@ package com.astroverse.backend.controller;
 import com.astroverse.backend.component.ChangeUserRequest;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.component.Hash;
+import com.astroverse.backend.model.Preference;
 import com.astroverse.backend.model.TokenBlackList;
 import com.astroverse.backend.model.User;
 import com.astroverse.backend.repository.UserRepository;
+import com.astroverse.backend.service.PreferenceService;
 import com.astroverse.backend.service.TokenBlackListService;
 import com.astroverse.backend.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.List;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,20 +37,26 @@ public class AuthControllerTest {
     @Mock
     private TokenBlackList tokenBlackList;
     @Mock
+    private PreferenceService preferenceService;
+    @Mock
     private TokenBlackListService tokenBlackListService;
+
 
     @Test
     public void testRegistration() {
         User mockUser = new User("Test", "User", "testUser", "test@example.com", "Password!22");
+        Preference p = new Preference(mockUser, "Tecnologia e Ingegneria");
 
         when(userService.saveUser(any(User.class))).thenReturn(mockUser);
+        when(preferenceService.savePreference(any(Preference.class))).thenReturn(p);
         when(jwtUtil.generateToken(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome(), mockUser.isAdmin())).thenReturn("accessToken");
         ResponseEntity<?> response = authController.registrationUser(
                 mockUser.getNome(),
                 mockUser.getCognome(),
                 mockUser.getEmail(),
                 mockUser.getUsername(),
-                mockUser.getPassword()
+                mockUser.getPassword(),
+                List.of("Teconlogia e Ingegneria")
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -68,15 +77,18 @@ public class AuthControllerTest {
     @Test
     public void testLogin() {
         User mockUser = new User("Test", "User", "testUser", "test@example.com", "Password!22");
+        Preference p = new Preference(mockUser, "Tecnologia e Ingegneria");
 
         when(userService.saveUser(any(User.class))).thenReturn(mockUser);
+        when(preferenceService.savePreference(any(Preference.class))).thenReturn(p);
         when(jwtUtil.generateToken(mockUser.getId(), mockUser.getEmail(), mockUser.getUsername(), mockUser.getNome(), mockUser.getCognome(), mockUser.isAdmin())).thenReturn("accessToken");
         ResponseEntity<?> response = authController.registrationUser(
                 mockUser.getNome(),
                 mockUser.getCognome(),
                 mockUser.getEmail(),
                 mockUser.getUsername(),
-                mockUser.getPassword()
+                mockUser.getPassword(),
+                List.of("Tecnologia e Ingegneria")
         );
         assertEquals(HttpStatus.OK, response.getStatusCode());
 

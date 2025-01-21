@@ -19,6 +19,7 @@
   })
   const route = useRoute()
   const router = useRouter()
+  const preference = ref([])
   watchEffect(() => {
     if (route.query.page !== 'login' && route.query.page !== 'registration') {
       router.push('/')
@@ -69,6 +70,9 @@
     } else if(!isValidPassword(user.value.password)) {
       toast.error("La password non è valida");
       return
+    } else if(preference.value.length === 0) {
+      toast.error("Inserisci almeno una preferenza");
+      return
     }
     const body = new URLSearchParams();
     body.append("nome", user.value.nome)
@@ -77,6 +81,7 @@
     body.append("email", user.value.email)
     body.append("password", user.value.password)
     body.append("confermaPassowrd", user.value.confermaPassword)
+    body.append("preference", preference.value)
     await apiTokenForm.post('/auth/registration', body)
         .then(async (response) => {
           const token = await response.data.accessToken
@@ -111,6 +116,51 @@
       <v-text-field label="Email" v-model="user.email" width="400px" color="white" base-color="white"></v-text-field>
       <v-text-field type="password" label="Password" v-model="user.password" width="400px" color="white" base-color="white"></v-text-field>
       <v-text-field type="password" label="Conferma Password" v-model="user.confermaPassword" width="400px" color="white" base-color="white"></v-text-field>
+      <div class="preference-container">
+        <h2>Esprimi le tue preferenze di contenuti:</h2>
+        <div class="checkbox-container">
+          <label>
+            <input type="checkbox" value="Tecnologia e Ingegneria" v-model="preference" />
+            <span class="checkmark"></span>
+            Tecnologia e Ingegneria
+          </label>
+          <label>
+            <input type="checkbox" value="Finanza e Investimenti" v-model="preference" />
+            <span class="checkmark"></span>
+            Finanza e Investimenti
+          </label>
+          <label>
+            <input type="checkbox" value="Salute e Benessere" v-model="preference" />
+            <span class="checkmark"></span>
+            Salute e Benessere
+          </label>
+          <label>
+            <input type="checkbox" value="Cultura e Società" v-model="preference" />
+            <span class="checkmark"></span>
+            Cultura e Società
+          </label>
+          <label>
+            <input type="checkbox" value="Relazioni e Famiglie" v-model="preference" />
+            <span class="checkmark"></span>
+            Relazioni e Famiglie
+          </label>
+          <label>
+            <input type="checkbox" value="Hobby e Interessi Personali" v-model="preference" />
+            <span class="checkmark"></span>
+            Hobby e Interessi Personali
+          </label>
+          <label>
+            <input type="checkbox" value="Scienze e Natura" v-model="preference" />
+            <span class="checkmark"></span>
+            Scienze e Natura
+          </label>
+          <label>
+            <input type="checkbox" value="Arte e Creatività" v-model="preference" />
+            <span class="checkmark"></span>
+            Arte e Creatività
+          </label>
+        </div>
+      </div>
       <v-btn prepend-icon="astroverse-icon" variant="outlined" color="white" @click="registrationUser">
         Registrati
       </v-btn>

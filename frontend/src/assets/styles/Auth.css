@@ -4,6 +4,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
+    padding: 2em 0;
 }
 
 .form-container {
@@ -62,4 +63,62 @@ body {
 
 .link-container .routerLink:hover {
     text-decoration: underline;
+}
+
+.preference-container h2 {
+    color: white;
+    text-align: center;
+}
+
+.preference-container .checkbox-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    margin: 1em 0;
+}
+
+.checkbox-container label {
+    color: white;
+    display: flex;
+    flex-direction: row;
+    gap: .4em;
+    align-items: center;
+    font-size: 20px;
+}
+
+.checkbox-container input[type='checkbox'] {
+    display: none;
+}
+
+.checkbox-container .checkmark {
+    border: 2px white solid;
+    border-radius: 5px;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    transition: .2s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.checkbox-container .checkmark:after {
+    content: "✔";
+    font-size: 14px;
+    color: #4e0a70;
+    opacity: 0;
+    transition: .2s;
+    font-weight: bold;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkmark {
+    background-color: white;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkmark:after {
+    opacity: 1;
 }

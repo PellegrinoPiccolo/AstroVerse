@@ -4,8 +4,10 @@ import com.astroverse.backend.component.ChangeUserRequest;
 import com.astroverse.backend.component.JwtUtil;
 import com.astroverse.backend.component.Hash;
 import com.astroverse.backend.component.UserDTO;
+import com.astroverse.backend.model.Preference;
 import com.astroverse.backend.model.TokenBlackList;
 import com.astroverse.backend.model.User;
+import com.astroverse.backend.service.PreferenceService;
 import com.astroverse.backend.service.TokenBlackListService;
 import com.astroverse.backend.service.UserService;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -22,15 +25,17 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
     private final TokenBlackListService tokenBlackListService;
+    private final PreferenceService preferenceService;
     private static final String namesRegex = "^[A-Za-zÀ-ÿ\\s]{2,30}$";
     private static final String usernameRegex = "^[A-Za-z0-9._\\-\\s]{3,20}$";
     private static final String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
     private static final String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$";
 
-    public AuthController(JwtUtil jwtUtil, UserService userService, TokenBlackListService tokenBlackListService) {
+    public AuthController(JwtUtil jwtUtil, UserService userService, TokenBlackListService tokenBlackListService, PreferenceService preferenceService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.tokenBlackListService = tokenBlackListService;
+        this.preferenceService = preferenceService;
     }
 
     public boolean isValidText(String text, String regex) {
@@ -60,7 +65,7 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registrationUser(@RequestParam String nome, @RequestParam String cognome, @RequestParam String email, @RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> registrationUser(@RequestParam String nome, @RequestParam String cognome, @RequestParam String email, @RequestParam String username, @RequestParam String password, @RequestParam List<String> preference) {
         Map<String, String> response = new HashMap<>();
         User user = new User(nome, cognome, username, email, password);
         if (!isValidText(user.getNome(), namesRegex)) {
@@ -83,6 +88,10 @@ public class AuthController {
             response.put("error", "Password non valida");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        if (preference.isEmpty()) {
+            response.put("error", "Numero di preferenze non valido");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
         String hashPassword = Hash.hashPassword(user.getPassword());
         user.setPassword(hashPassword);
         try {
@@ -97,6 +106,10 @@ public class AuthController {
             if (accessToken == null) {
                 response.put("error", "Errore nella generazione del token");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+            for (String p : preference) {
+                Preference pr = new Preference(userWithId, p);
+                preferenceService.savePreference(pr);
             }
             response.put("accessToken", accessToken);
             return ResponseEntity.ok(response);
