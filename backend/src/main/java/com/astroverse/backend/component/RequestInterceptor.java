@@ -45,10 +45,6 @@ public class RequestInterceptor implements HandlerInterceptor {
         if (tokenBlackListService.existToken(accessToken)) {
             return false;
         }
-        if (!jwtUtil.isTokenValid(accessToken)) {
-            System.out.println("accessToken: " + accessToken);
-            return false;
-        }
-        return true;
+        return jwtUtil.isTokenValid(accessToken);
     }
 }

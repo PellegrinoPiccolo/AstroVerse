@@ -4,6 +4,7 @@
     justify-content: flex-start;
     align-items: center;
     padding: 2em 0;
+    gap: 1em;
 }
 
 .arrow-section-user-view {
