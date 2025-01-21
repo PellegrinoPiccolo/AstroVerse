@@ -1,5 +1,5 @@
 import axios from "axios";
-import ServerUrl from "@/constants/ServerUrl.js";
+import ServerUrl, {AiServerUrl} from "@/constants/ServerUrl.js";
 import Cookies from "js-cookie";
 
 export const apiUrlToken = axios.create({
@@ -38,6 +38,10 @@ export const apiTokenForm = axios.create({
     }
 })
 
+export const apAiToken = axios.create({
+    baseURL: `${AiServerUrl}/api`,
+})
+
 const addTokenInterceptor = (axiosIstance) => {
         axiosIstance.interceptors.request.use(
             (config) => {
@@ -55,3 +59,4 @@ const addTokenInterceptor = (axiosIstance) => {
 addTokenInterceptor(apiTokenJson)
 addTokenInterceptor(apiTokenForm)
 addTokenInterceptor(apiUrlToken)
+addTokenInterceptor(apAiToken)

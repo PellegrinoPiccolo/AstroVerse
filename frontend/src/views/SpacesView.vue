@@ -1,6 +1,6 @@
 <script setup>
   import {ref, watchEffect} from "vue";
-  import {apiUrlToken} from "@/constants/ApiUrl.js";
+  import {apAiToken, apiUrlToken} from "@/constants/ApiUrl.js";
   import {useRoute, useRouter} from "vue-router";
   import {toast} from "vue3-toastify";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
@@ -16,7 +16,7 @@
   const show = ref({})
 
   watchEffect(() => {
-    apiUrlToken.get(`/space/get-all-spaces/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
+    apAiToken.get(`/space/get-all-spaces/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
         .then((response) => {
           spaces.value = response.data.spaces
           numberOfPages.value = response.data.numberOfPages
