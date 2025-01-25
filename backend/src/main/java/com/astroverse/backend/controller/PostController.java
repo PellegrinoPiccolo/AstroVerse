@@ -41,7 +41,6 @@ public class PostController {
         Map<String, Object> response = new HashMap<>();
         token = token.replace("Bearer ", "");
         if (!isValidText(testo, testoRegex)) {
-            System.out.println("PROVA QUA");
             response.put("error", "Formato del testo non valido");
             return ResponseEntity.status(400).body(response);
         }
@@ -51,7 +50,6 @@ public class PostController {
         Post createdPost = postService.savePost(post);
         if (file != null && !file.isEmpty()) {
             if(!checkImageFile(file)) {
-                System.out.println("PROVA QUA 2");
                 response.put("error", "Formato dell'immagine non valido");
                 return ResponseEntity.status(400).body(response);
             }

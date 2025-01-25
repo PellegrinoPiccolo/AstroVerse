@@ -42,7 +42,7 @@
         if(error.response) {
           toast.error(error.response.data.error)
         }
-        console.log(error)
+        console.error(error)
       })
     loading.value = false
   })

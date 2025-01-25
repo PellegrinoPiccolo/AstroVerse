@@ -71,7 +71,6 @@
         toast.error("Titolo non valido")
         return
       } else if (!isValidDescription(space.value.description)) {
-        console.log(space.value.description)
         toast.error("Descrizione non valida")
         return
       } else if (file.value !== null && !isValidImageType(file.value)) {

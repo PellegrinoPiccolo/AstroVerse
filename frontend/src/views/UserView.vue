@@ -20,7 +20,6 @@
     await apiUrlToken.get('/auth/view-account')
         .then((response) => {
             user.value = response.data.user
-          console.log(response.data.user)
         })
         .catch((error) => {
           console.error(error.response)

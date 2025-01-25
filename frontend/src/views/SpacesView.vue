@@ -7,7 +7,9 @@
   import {faArrowLeft, faArrowRight, faChevronDown, faChevronUp} from "@fortawesome/free-solid-svg-icons";
   import "@/assets/styles/SpacesView.css"
 
-  const spaces = ref(null)
+  const spacesSuggested = ref([])
+  const spacesNotSuggested = ref([])
+  const spaces = ref([])
   const route = useRoute()
   const router = useRouter()
   const numberOfPages = ref(0)
@@ -16,9 +18,19 @@
   const show = ref({})
 
   watchEffect(() => {
-    apAiToken.get(`/space/get-all-spaces/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
+    apAiToken.get(`/get-spaces/${(pageRef.value < 1 || pageRef.value > numberOfPages.value) ? 1 : pageRef.value}`)
         .then((response) => {
-          spaces.value = response.data.spaces
+          spacesSuggested.value = []
+          spacesNotSuggested.value = []
+          spaces.value = []
+          response.data.spaces.forEach((space) => {
+            if (space.consigliato) {
+              spacesSuggested.value = [...spacesSuggested.value, space];
+            } else {
+              spacesNotSuggested.value = [...spacesNotSuggested.value, space]
+            }
+            spaces.value = [...spaces.value, space]
+          });
           numberOfPages.value = response.data.numberOfPages
           if (route.query.page < 1) {
             router.push("?page=1")
@@ -63,10 +75,10 @@
 </script>
 
 <template>
-  <div class="spaces-container" v-if="spaces">
-    <h1>Naviga gli spazi di AstroVerse:</h1>
-    <div class="spaces-card-container">
-      <v-card class="mx-auto" max-width="344" v-for="space in spaces" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', height: show[space.id] ? 'auto' : '19.8em', width: '220px'}" style="background: #262626">
+  <div class="spaces-container" v-if="spaces.length > 0">
+    <h1 v-if="spacesSuggested.length > 0">Spazi consigliati di AstroVerse:</h1>
+    <div class="spaces-card-container" v-if="spacesSuggested.length > 0">
+      <v-card class="mx-auto" max-width="344" v-for="space in spacesSuggested" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', height: show[space.id] ? 'auto' : '19.8em', width: '220px'}" style="background: #262626">
         <v-img height="200px" :src="spacesImages[space.id]" cover v-if="spacesImages[space.id]"></v-img>
         <v-card-title>
           {{space.title}}
@@ -89,6 +101,33 @@
               </v-card-text>
             </div>
           </v-expand-transition>
+      </v-card>
+    </div>
+    <h1 v-if="spacesNotSuggested.length > 0">Altri Spazi di AstroVerse:</h1>
+    <div class="spaces-card-container" v-if="spacesNotSuggested.length > 0">
+      <v-card class="mx-auto" max-width="344" v-for="space in spacesNotSuggested" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', height: show[space.id] ? 'auto' : '19.8em', width: '220px'}" style="background: #262626">
+        <v-img height="200px" :src="spacesImages[space.id]" cover v-if="spacesImages[space.id]"></v-img>
+        <v-card-title>
+          {{space.title}}
+        </v-card-title>
+        <v-card-subtitle>
+          {{space.argument}}
+        </v-card-subtitle>
+        <v-card-actions>
+          <v-btn color="white" variant="outlined" text="Mostra di più" @click="handleViewSpace(space.id)"></v-btn>
+          <v-spacer></v-spacer>
+          <v-btn @click="show[space.id] = !show[space.id]">
+            <FontAwesomeIcon :icon="show[space.id] ? faChevronUp : faChevronDown" class="arrow-icon-space-card"/>
+          </v-btn>
+        </v-card-actions>
+        <v-expand-transition>
+          <div v-if="show[space.id]">
+            <v-divider></v-divider>
+            <v-card-text>
+              {{space.description.length > 180 ? space.description.slice(0, 180) + '...' : space.description}}
+            </v-card-text>
+          </div>
+        </v-expand-transition>
       </v-card>
     </div>
     <div v-if="numberOfPages > 1" class="arrow-spaces-view-container">
