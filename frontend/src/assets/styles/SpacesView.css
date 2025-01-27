@@ -14,7 +14,7 @@
 
 .spaces-card-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
+    grid-template-columns: repeat(6, minmax(100px, max-content));
     gap: 1em;
     width: 100%;
     box-sizing: border-box;

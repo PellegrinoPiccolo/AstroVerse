@@ -76,7 +76,7 @@
 
 <template>
   <div class="spaces-container" v-if="spaces.length > 0">
-    <h1 v-if="spacesSuggested.length > 0">Spazi consigliati di AstroVerse:</h1>
+    <h1 v-if="spacesSuggested.length > 0">Spazi suggeriti di AstroVerse:</h1>
     <div class="spaces-card-container" v-if="spacesSuggested.length > 0">
       <v-card class="mx-auto" max-width="344" v-for="space in spacesSuggested" :key="space.id" :style="{overflow: show[space.id] ? 'visible' : 'hidden', height: show[space.id] ? 'auto' : '19.8em', width: '220px'}" style="background: #262626">
         <v-img height="200px" :src="spacesImages[space.id]" cover v-if="spacesImages[space.id]"></v-img>
