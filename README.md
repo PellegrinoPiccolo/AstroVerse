@@ -4,6 +4,7 @@ Created: October 10, 2024 11:57 AM
 Trello: [AstroVerseIS](https://trello.com/b/W32LhGw5/astroverseis)  
 Slack: [Progetto IS Slack](https://join.slack.com/t/progettoisadchchpl/shared_invite/zt-2rxwjgdhx-P~UW7Ups6JCDrtdBl1lEIw)  
 GitHub Repository: [AstroVerse Repository](https://github.com/PellegrinoPiccolo/AstroVerse.git)  
+AI Repository: [AstroVerseIA Repository](https://github.com/Adry04/AstroVerseIA/tree/main)  
 Last Updated: January 5, 2025 2:21 PM
 
 ![Spring Boot Social Web Application
@@ -45,7 +46,7 @@ To clone the project locally follow these steps:
 
 ## AI Update
 
-After the Artificial Intelligence module update and deployment into AstroVerse you have now the possibility to express your preferences freely through the macro_arguments in the autentication phase, when registering a new account, that will automatically suggest you relevant AstroVerse spaces, based on your current interests. Just make sure to use the `dev-ai/main` branch to see and use the new updates or the new release v2.1
+After the Artificial Intelligence module update and deployment into AstroVerse you have now the possibility to express your preferences freely through the macro_arguments in the autentication phase, when registering a new account, that will automatically suggest you relevant AstroVerse spaces, based on your current interests. Just make sure to use the `dev-ai/main` branch to see and use the new updates or the new release v2.1 and the Artificial Intellingence module pinned on top, inside the relative repository you will find the instruction on how to run it.
 
 ## Built with
 
