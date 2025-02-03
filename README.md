@@ -43,6 +43,10 @@ To clone the project locally follow these steps:
 6. Then open the folder "*frontend"* and run the frontend with the `npm install` and then `npm run` commands;
 7. Open your browser on `localhost:5173`.
 
+## AI Update
+
+After the Artificial Intelligence module update and deployment into AstroVerse you have now the possibility to express your preferences freely through the macro_arguments in the autentication phase, when registering a new account, that will automatically suggest you relevant AstroVerse spaces, based on your current interests. Just make sure to use the `dev-ai/main` branch to see and use the new updates or the new release v2.1
+
 ## Built with
 
 - [Java](https://docs.oracle.com/en/java/javase/21/) - The programming language used for back-end development
