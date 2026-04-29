@@ -5,7 +5,6 @@ import com.astroverse.backend.model.Space;
 import com.astroverse.backend.model.UserSpace;
 import com.astroverse.backend.repository.UserRepository;
 import com.astroverse.backend.repository.UserSpaceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +114,7 @@ public class UserService {
                     user.getEmail(), user.getQuantumEncapsulation(), user.getClientEccPublicKey()
             ));
         }
-        return userRepository.getUserById(id);
+        return user;
     }
 
     public String getOldPassword(Long id) {
