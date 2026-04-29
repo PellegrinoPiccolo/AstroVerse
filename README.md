@@ -24,9 +24,11 @@ A project for Software Engineering course of Computer Science at the University 
 
 ## Documents
 
-All the project documents can be found inside the “*Docs”* directory of the repository, the test directory can be found inside *Docs→Testing* divided by test type (blackbox/whitebox).
+All the project documents can be found inside the *“Docs”* directory of the repository, the test directory can be found inside *Docs → Testing* divided by test type (blackbox/whitebox).
 
 Those documents include the Statement Of Work (SOW), Requirement Analysis Document (RAD), System Design Document (SDD), some notions on Object Design Document (ODD), Test Plan (TP), Test Case Scenarios (TCS), Test Summary Report (TSR), Test Incident Report (TIR) and Test Incident Report Table (TIRT).
+
+Now there's a new section of the documents in *"Docs"* called *"QuantumMigration"* that contains the thesis of [**Adriano De Vita**](https://github.com/Adry04) that covered the last necessary update on Quantum Migration as part of his internship. The reading of the document is highly recommended to those who are interested in taking action in the process of migration to new PQC algorithms and technologies.
 
 # Technical Information
 
